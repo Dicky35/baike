@@ -77,6 +77,7 @@ export default {
   },
   data () {
     return {
+      serverUrl: 'http://101.200.34.92:8081',
       user_id: 0,
       user_token: '',
       task_id: 0,
@@ -113,7 +114,7 @@ export default {
       console.log('登录信息: ', msg)
 
       this.$axios
-        .post('/api/searchUserId', msg)
+        .post(this.serverUrl + '/api/searchUserId', msg)
         .then(res => {
           console.log('词条搜索结束')
           console.log(res)

@@ -293,6 +293,7 @@ export default {
   },
   data () {
     return {
+      serverUrl: 'http://101.200.34.92:8081',
       user_id: 0,
       user_token: '',
       source: 0,
@@ -913,7 +914,7 @@ export default {
     save () {
       let msg = JSON.stringify(this.form)
       this.$axios
-        .post('/api/updateEditItem', msg)
+        .post(this.serverUrl + '/api/updateEditItem', msg)
         .then(res => {
           console.log('完善词条结束，提交修改')
           console.log(res)
@@ -1019,7 +1020,7 @@ export default {
     },
     refreshAttribute (attribute) {
       this.$axios
-        .get('/data/getAttribute', {
+        .get(this.serverUrl + '/data/getAttribute', {
           params: {
             category: attribute
           }

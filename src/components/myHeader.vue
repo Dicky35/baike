@@ -33,6 +33,7 @@ export default {
   name: 'myHeader',
   data () {
     return {
+      serverUrl: 'http://101.200.34.92:8081',
       user_id: 4,
       user_token: '19980102',
       task_id: 987654,
@@ -83,7 +84,7 @@ export default {
       console.log(msg)
 
       this.$axios
-        .post('/api/searchUserId', msg)
+        .post(this.serverUrl + '/api/searchUserId', msg)
         .then(function (res) {
           console.log(res)
         })
@@ -105,7 +106,7 @@ export default {
       console.log(msg)
 
       this.$axios
-        .post('/api/updateEditItem', msg)
+        .post(this.serverUrl + '/api/updateEditItem', msg)
         .then(function (res) {
           console.log(res)
         })
@@ -115,7 +116,7 @@ export default {
       console.log(msg)
 
       this.$axios
-        .post('/api/getCheckItem', msg)
+        .post(this.serverUrl + '/api/getCheckItem', msg)
         .then(function (res) {
           console.log(res)
         })
@@ -125,7 +126,7 @@ export default {
       console.log(msg)
 
       this.$axios
-        .post('/api/updateCheckItem', msg)
+        .post(this.serverUrl + '/api/updateCheckItem', msg)
         .then(function (res) {
           console.log(res)
         })
@@ -135,7 +136,7 @@ export default {
       console.log(msg)
 
       this.$axios
-        .post('/api/taskSplit', msg)
+        .post(this.serverUrl + '/api/taskSplit', msg)
         .then(function (res) {
           console.log(res)
         })

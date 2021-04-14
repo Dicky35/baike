@@ -81,6 +81,7 @@ export default {
   },
   data() {
     return {
+      serverUrl: 'http://101.200.34.92:8081',
       user_id: 0,
       user_token: '',
       task_id: 0,
@@ -116,7 +117,7 @@ export default {
       let msg = JSON.stringify({task_id: this.task_id})
       console.log('审核人员查询专题信息: ', msg)
       this.$axios
-        .post('/api/getCheckItem', msg)
+        .post(this.serverUrl + '/api/getCheckItem', msg)
         .then(res => {
           console.log('词条搜索结束')
           console.log(res)
@@ -156,7 +157,7 @@ export default {
       let msg = JSON.stringify({task_id: this.task_id, item_id: itemId, checkResult: 1})
       console.log('提交审核：', msg)
       this.$axios
-        .post('/api/updateCheckItem', msg)
+        .post(this.serverUrl + '/api/updateCheckItem', msg)
         .then(res => {
           console.log('审核词条结果：通过')
           console.log(res)
@@ -169,7 +170,7 @@ export default {
       let msg = JSON.stringify({task_id: this.task_id, item_id: itemId, checkResult: 0})
       console.log('提交审核：', msg)
       this.$axios
-        .post('/api/updateCheckItem', msg)
+        .post(this.serverUrl + '/api/updateCheckItem', msg)
         .then(res => {
           console.log('审核词条结果：未通过')
           console.log(res)

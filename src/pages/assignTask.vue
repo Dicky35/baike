@@ -188,6 +188,7 @@ export default {
   },
   data() {
     return {
+      serverUrl: 'http://101.200.34.92:8081',
       task_id: 0,
       user_id: 0,
       user_token: '',
@@ -346,7 +347,7 @@ export default {
         subtask: this.subtaskTableData
       })
       this.$axios
-        .post('/api/taskSplit', msg)
+        .post(this.serverUrl + '/api/taskSplit', msg)
         .then(res => {
           console.log('发布任务成功', msg)
           this.displayMessage('success', '发布任务成功')
