@@ -1,0 +1,51 @@
+{
+    "method": "get",
+    "path": "/getSubject",
+    "requestAttribute": {
+        "subjectId": 1
+    },
+    "requestResult": {
+        "msg": "success",
+        "data": {
+            "id":0,
+            "name":"",
+            "imageUrl":"",
+            "creator": "",
+            "currentCount": 1,
+            "totalCount": 1,
+            "drawedTaskCountLimit":1,
+            "introduction":"",
+            "goal":"",
+            "field":"",
+            "deadline":0,
+            "isPublic":1,
+            "initState":1   
+        }
+    }
+}
+
+{
+    "method": "get",
+    "path": "/getSubjects",
+    "requestAttribute": {
+        "subjectId": 1
+    },
+    "requestResult": {
+        "msg": "success",
+        "data": {
+            "id":0,
+            "name":"",
+            "imageUrl":"",
+            "creator": "",
+            "currentCount": 1,
+            "totalCount": 1,
+            "drawedTaskCountLimit":1,
+            "introduction":"",
+            "goal":"",
+            "field":"",
+            "deadline":0,
+            "isPublic":1,
+            "initState":1   
+        }
+    }
+}

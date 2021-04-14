@@ -1,0 +1,26 @@
+{
+	"version": "Live2DViewerEX Config 1.0",
+	"model": "/static/live2d/live2d-widget-model-z16/assets/moc/z16.moc",
+	"textures": [
+		"/static/live2d/live2d-widget-model-z16/assets/moc/z16.1024/texture_00.png"
+	],
+	"layout": {
+		"center_x": 0,
+		"center_y": 0,
+		"width": 2
+	},
+	"motions": {
+		"idle": [
+			{
+				"file": "/static/live2d/live2d-widget-model-z16/assets/mtn/idle.mtn"
+			}
+		]
+	},
+	"expressions": [
+		{
+			"name": "/static/live2d/live2d-widget-model-z16/assets/f00.exp.json",
+			"file": "/static/live2d/live2d-widget-model-z16/assets/exp/f00.exp.json"
+		}
+	],
+	"physics": "/static/live2d/live2d-widget-model-z16/assets/z16.physics.json"
+}

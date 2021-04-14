@@ -1,0 +1,80 @@
+{
+	"version": "Sample 1.0.0",
+	"model": "/static/live2d/live2d-widget-model-nico/assets/moc/nico.moc",
+	"textures": [
+		"/static/live2d/live2d-widget-model-nico/assets/moc/nico.2048/texture_00.png",
+		"/static/live2d/live2d-widget-model-nico/assets/moc/nico.2048/texture_01.png",
+		"/static/live2d/live2d-widget-model-nico/assets/moc/nico.2048/texture_02.png"
+	],
+	"motions": {
+		"idle": [
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/00_idle.mtn"
+			}
+		],
+		"": [
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/01_happy.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/02_angry.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/03_fear.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/04_surprise.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/05_fun.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/06_love.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/07_bye.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/08_sad.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/09_yawn.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/10_yeah.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/11_muscle.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/12_stagger.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/13_cry.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/14_ sigh.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/15_joy.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/16_menace.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/17_yes.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/18_no.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/19_walk.mtn"
+			},
+			{
+				"file": "/static/live2d/live2d-widget-model-nico/assets/mtn/20_sleep.mtn"
+			}
+		]
+	},
+	"physics": "nico.physics.json",
+	"pose": "nico.pose.json"
+}
