@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export default class MyUploadAdapter {
+export default class  MyUploadAdapter {
   // eslint-disable-next-line no-tabs
   constructor (loader) {
     // Save Loader instance to update upload progress.

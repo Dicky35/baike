@@ -106,7 +106,9 @@
               <div class="basic-info-intro-content">
                 <el-upload
                   class="avatar-uploader basic-info-intro-image"
-                  :action="others.serverUrl"
+                  action=""
+                  :http-request="uploadImg"
+                  name='photo'
                   :show-file-list="false"
                   :on-success="handleAvatarSuccess"
                   :before-upload="beforeAvatarUpload"
@@ -291,7 +293,7 @@ export default {
       if (val != '') this.refreshAttribute(val)
     }
   },
-  data () {
+  data() {
     return {
       serverUrl: 'http://101.200.34.92:8081',
       user_id: 0,
@@ -316,7 +318,8 @@ export default {
         content: '',
         reference: [],
         relation: [],
-        status: 0
+        status: 0,
+        operation: 0
       },
       introEditor: {
         editorObject: null,
@@ -786,7 +789,7 @@ export default {
         recommendcatalog: [],
         catalog: [],
         catalogOpen: true, // 目录显示控制
-        serverUrl: '/resource/image',
+        serverUrl: 'http://101.200.34.92:9010/up_photo',
         dialogFormVisible: false,
         referenceForm: {
           title: '',
@@ -798,12 +801,12 @@ export default {
       }
     }
   },
-  created () {
+  created() {
     this.initData()
   },
   methods: {
     // 初始化数据
-    initData () {
+    initData() {
       // 0：
       // if (this.$route.query.source == 0) {
       //   this.source = 1
@@ -898,7 +901,7 @@ export default {
       // }
     },
     // 初始化Toolbar
-    onReady (editor) {
+    onReady(editor) {
       // Insert the toolbar
       this.$refs.toolbar.appendChild(editor.ui.view.toolbar.element)
       editor.plugins.get('FileRepository').createUploadAdapter = loader => {
@@ -907,30 +910,35 @@ export default {
       this.contentEditor.editorObject = editor
     },
     // 绑定更新目录
-    onContentEditorInput (editor) {
+    onContentEditorInput(editor) {
       this.refreshCatalog()
     },
     // TODO 未完成， 需要把关系写入数据库
-    save () {
+    save() {
+      this.form.operation = 0
       let msg = JSON.stringify(this.form)
+      console.log('save item message: ', msg)
       this.$axios
-        .post(this.serverUrl + '/api/updateEditItem', msg)
+        .post(this.serverUrl + '/inside_api/entry/updateEditItem', msg)
         .then(res => {
-          console.log('完善词条结束，提交修改')
+          console.log('保存修改成功')
           console.log(res)
+
+          this.$router.push({
+            name: 'edit',
+            params: {
+              user_id: this.user_id,
+              user_token: this.user_token,
+              task_id: this.task_id
+            }
+          })
+
         })
         .catch(error => {
-          console.log('完善词条保存失败')
+          console.log('保存修改失败')
           console.log(error)
         })
-      this.$router.push({
-        name: 'edit',
-        params: {
-          user_id: this.user_id,
-          user_token: this.user_token,
-          task_id: this.task_id
-        }
-      })
+
       // this.$axios
       //   .post('/api/user/saveTaskContent', {
       //     taskId: new Number(this.taskId),
@@ -960,7 +968,7 @@ export default {
       //   })
     },
     // 目录显示控制
-    catalogHanlder () {
+    catalogHanlder() {
       if (this.others.catalogOpen == false) {
         this.$refs.catalogSide.style.display = 'block'
         this.others.catalogOpen = true
@@ -972,7 +980,7 @@ export default {
       }
     },
     // 更新目录
-    refreshCatalog () {
+    refreshCatalog() {
       var nodes = this.contentEditor.editorObject.sourceElement.childNodes
       this.others.catalog.splice(0, this.others.catalog.length)
       var i1 = 0
@@ -1001,16 +1009,16 @@ export default {
       }
     },
     // TODO 应用目录
-    applyRecommendCatalog () {
+    applyRecommendCatalog() {
       this.refreshCatalog()
     },
-    handleFieldDelete (tag) {
+    handleFieldDelete(tag) {
       this.form.field.splice(this.form.field.indexOf(tag), 1)
     },
-    showSelect () {
+    showSelect() {
       this.others.selectVisible = true
     },
-    addField () {
+    addField() {
       let selectValue = this.others.selectValue
       if (selectValue) {
         this.form.field.push(selectValue[0])
@@ -1018,7 +1026,7 @@ export default {
       this.others.selectVisible = false
       this.others.selectValue = ''
     },
-    refreshAttribute (attribute) {
+    refreshAttribute(attribute) {
       this.$axios
         .get(this.serverUrl + '/data/getAttribute', {
           params: {
@@ -1042,8 +1050,28 @@ export default {
           }
         })
     },
+    uploadImg(item) {
+      let formData = new FormData()
+      formData.append('photo', item.file)
+      formData.append('group', 'system')
+
+      this.$axios
+        .post('http://101.200.34.92:9010/up_photo', formData)
+        .then(response => {
+          console.log('uploadImg:', response)
+          if (response.status === 200) {
+            console.log('upload success')
+            this.form.imageUrl = 'http://101.200.34.92:9010/download/' + response.data.filename
+            console.log('imageUrl: ', this.form.imageUrl)
+
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
     // 词条图片上传限制
-    beforeAvatarUpload (file) {
+    beforeAvatarUpload(file) {
       const isLt2M = file.size / 1024 / 1024 < 2
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!')
@@ -1051,15 +1079,15 @@ export default {
       return isLt2M
     },
     // 词条图片上传
-    handleAvatarSuccess (res, file) {
+    handleAvatarSuccess(res, file) {
       this.form.imageUrl = res.data.url
     },
     // 参考资料
-    addReference () {
+    addReference() {
       this.others.referenceForm.type = 1
       this.others.dialogFormVisible = true
     },
-    editReference (id) {
+    editReference(id) {
       this.others.referenceForm.type = 2
       this.others.referenceForm.aim = id
       this.others.referenceForm.title = this.form.reference[id].title
@@ -1067,7 +1095,7 @@ export default {
       this.others.referenceForm.url = this.form.reference[id].url
       this.others.dialogFormVisible = true
     },
-    deleteReference (id) {
+    deleteReference(id) {
       if (this.form.reference.length > id) {
         this.form.reference.splice(id, 1)
       }

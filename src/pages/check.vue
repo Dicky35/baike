@@ -117,31 +117,11 @@ export default {
       let msg = JSON.stringify({task_id: this.task_id})
       console.log('审核人员查询专题信息: ', msg)
       this.$axios
-        .post(this.serverUrl + '/api/getCheckItem', msg)
+        .post(this.serverUrl + '/inside_api/entry/getCheckItem', msg)
         .then(res => {
           console.log('词条搜索结束')
           console.log(res)
-          // this.tableData = res.data.data
-
-          for (let i in res.data.data) {
-            let item = res.data.data[i]
-            console.log('item: ', item)
-            let tmp = {}
-            tmp.item_id = item.id
-            tmp.task_id = item.task_id
-            tmp.original_id = item.original_id
-            tmp.name = item.name
-            tmp.field = item.field
-            tmp.imageUrl = item.imageUrl
-            tmp.intro = item.intro
-            tmp.info_box = item.info_box
-            tmp.content = item.content
-            //  tmp.reference
-            tmp.relation = item.relation
-            tmp.status = item.status
-
-            this.tableData.push(tmp)
-          }
+          this.tableData = res.data.data
         })
     },
     handlePreview(row) {
@@ -154,28 +134,49 @@ export default {
 
     handleReceive(itemId) {
       // 修改词条状态
-      let msg = JSON.stringify({task_id: this.task_id, item_id: itemId, checkResult: 1})
+      let msg = JSON.stringify({
+        task_id: this.task_id,
+        item_id: itemId,
+        checkResult: 1,
+        user_id: this.user_id,
+        content: ''
+      })
       console.log('提交审核：', msg)
       this.$axios
-        .post(this.serverUrl + '/api/updateCheckItem', msg)
+        .post(this.serverUrl + '/inside_api/entry/updateCheckItem', msg)
         .then(res => {
           console.log('审核词条结果：通过')
           console.log(res)
+          this.reload()
+        })
+        .catch(error => {
+          console.log('审核词条异常: ',error)
+          this.reload()
         })
 
-      this.reload()
+
     },
     handleRefuse(itemId) {
       // 是否需要输入未通过审核的原因，不需要的话则和handleReceive合并
-      let msg = JSON.stringify({task_id: this.task_id, item_id: itemId, checkResult: 0})
+      let msg = JSON.stringify({
+        task_id: this.task_id,
+        item_id: itemId,
+        checkResult: 0,
+        user_id: this.user_id,
+        content: ''
+      })
       console.log('提交审核：', msg)
       this.$axios
-        .post(this.serverUrl + '/api/updateCheckItem', msg)
+        .post(this.serverUrl + '/inside_api/entry/updateCheckItem', msg)
         .then(res => {
           console.log('审核词条结果：未通过')
           console.log(res)
+          this.reload()
         })
-      this.reload()
+        .catch(error => {
+          console.log('审核词条异常: ',error)
+          this.reload()
+        })
     },
     displayMessage(type, msg) {
       this.$message({

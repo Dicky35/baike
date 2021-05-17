@@ -12,7 +12,7 @@
       <template slot="prepend">专题Id</template>
     </el-input>
 
-    <el-button type='primary'  @click="editPage(user_id,user_token,task_id)"> 编辑 </el-button>
+    <el-button type='primary' @click="editPage(user_id,user_token,task_id)"> 编辑</el-button>
     <el-button type='primary' @click="checkPage(user_id,user_token,task_id)">审核</el-button>
     <el-button type="primary" @click="handleAssign(user_id,user_token,task_id)">任务划分</el-button>
 
@@ -24,6 +24,28 @@
     <el-button type="primary" @click="getCheckItem">getCheckItem</el-button>
     <el-button type="primary" @click="updateCheckItem">updateCheckItem</el-button>
     <el-button type="primary" @click="submitTask">submitTask</el-button>
+    <el-button type="primary" @click="assignTask">assignTask</el-button>
+    <div>
+      <br/>
+      <br/>
+      <el-button type="primary" @click="assignLogin">assignLogin Page</el-button>
+      <el-button type="primary" @click="subtaskLogin">subtaskLogin Page</el-button>
+    </div>
+    <el-upload
+      class="avatar-uploader"
+      action=""
+      :http-request="uploadImg"
+      name='photo'
+      :show-file-list="false"
+      :on-success="handleAvatarSuccess"
+      :before-upload="beforeAvatarUpload"
+    >
+      <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar"/>
+      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+
+      <!--      <i class="el-icon-plus avatar-uploader-icon"></i>-->
+    </el-upload>
+
   </div>
 </template>
 
@@ -31,20 +53,63 @@
 
 export default {
   name: 'myHeader',
-  data () {
+  data() {
     return {
       serverUrl: 'http://101.200.34.92:8081',
-      user_id: 4,
-      user_token: '19980102',
-      task_id: 987654,
+      user_id: 3,
+      user_token: '3',
+      task_id: 5,
       circleUrl:
         'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
       squareUrl:
         'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png',
-      sizeList: ['large', 'medium', 'small']
+      sizeList: ['large', 'medium', 'small'],
+      form: {
+        imageUrl: ''
+      }
     }
   },
   methods: {
+    uploadImg(item) {
+      let formData = new FormData()
+      formData.append('photo', item.file)
+      formData.append('group', 'system')
+
+      this.$axios
+        .post('http://101.200.34.92:9010/up_photo', formData)
+        .then(response => {
+          console.log('uploadImg:', response)
+          if (response.status === 200) {
+            console.log('upload success')
+            // const contentType = response.type
+            // let result = this.fileReader(response)
+            //
+            // const blob = new Blob([result], {type: contentType})
+            //
+            // this.form.imageUrl = window.URL.createObjectURL(blob)
+            this.form.imageUrl='http://101.200.34.92:9010/download/'+response.data.filename
+            console.log('imageUrl: ',this.form.imageUrl)
+
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+    beforeAvatarUpload(file) {
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      console.log('size of picture: ', isLt2M)
+      return isLt2M
+    },
+    // 词条图片上传
+    handleAvatarSuccess(res, file) {
+      console.log('upload finish')
+      console.log('target response: ', res)
+      this.form.imageUrl = res.data.url
+    },
     editPage: function (userId, userToken, taskId) {
       this.$router.push({
         name: 'edit',
@@ -80,7 +145,7 @@ export default {
     },
     sendMessage: function (input1, input2) {
       console.log(input1, input2)
-      let msg = JSON.stringify({'user_id': 3,'task_id':987654})
+      let msg = JSON.stringify({'user_id': 3, 'task_id': 987654})
       console.log(msg)
 
       this.$axios
@@ -89,7 +154,7 @@ export default {
           console.log(res)
         })
     },
-    updateEditItem () {
+    updateEditItem() {
       let msg = JSON.stringify({
         task_id: 1,
         item_id: 94, // id
@@ -102,7 +167,8 @@ export default {
         content: '', // content
         reference: [],
         relation: [], // relation
-        status: 0})
+        status: 0
+      })
       console.log(msg)
 
       this.$axios
@@ -111,7 +177,7 @@ export default {
           console.log(res)
         })
     },
-    getCheckItem () {
+    getCheckItem() {
       let msg = JSON.stringify({task_id: 1})
       console.log(msg)
 
@@ -121,8 +187,8 @@ export default {
           console.log(res)
         })
     },
-    updateCheckItem () {
-      let msg = JSON.stringify({task_id: 1,item_id:28,checkResult:1})
+    updateCheckItem() {
+      let msg = JSON.stringify({task_id: 1, item_id: 28, checkResult: 1})
       console.log(msg)
 
       this.$axios
@@ -131,8 +197,38 @@ export default {
           console.log(res)
         })
     },
-    submitTask () {
-      let msg = JSON.stringify({task_id: 987654, token: '19980307', subtask: [{"name":"新建词条","content":"新建7条词条","type":1,"money":500.00,"itemCount":7}]})
+
+    assignTask() {
+      let msg = JSON.stringify({token: this.user_token})
+
+      console.log('任务划分登录-请求后台校验：',msg)
+      this.$axios
+        .post(this.serverUrl + '/inside_api/entry/userLogin', msg)
+        .then(res => {
+          console.log('token校验结果：', res)
+          this.inToken = res.data.data.inside_token
+          console.log(this.inToken)
+          window.sessionStorage.setItem('token', this.inToken)
+
+          this.$axios
+            .post(this.serverUrl + '/inside_api/entry/assignTask', JSON.stringify({
+              taskId: this.task_id
+            }))
+            .then(function (res) {
+              console.log(res)
+            })
+        })
+        .catch(error => {
+          console.log('用户校验失败：', error)
+        })
+
+    },
+    submitTask() {
+      let msg = JSON.stringify({
+        task_id: 987654,
+        token: '19980307',
+        subtask: [{"name": "新建词条", "content": "新建7条词条", "type": 1, "money": 500.00, "itemCount": 7}]
+      })
       console.log(msg)
 
       this.$axios
@@ -140,6 +236,18 @@ export default {
         .then(function (res) {
           console.log(res)
         })
+    },
+    assignLogin() {
+      this.$router.push({
+        name: 'assignLogin',
+        params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+      })
+    },
+    subtaskLogin() {
+      this.$router.push({
+        name: 'subtaskLogin',
+        params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+      })
     }
     // getInitItems () {
     //   let msg = JSON.stringify({})
@@ -158,6 +266,33 @@ export default {
 </script>
 
 <style scoped>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
 .el-button {
   margin: 0 auto;
 }

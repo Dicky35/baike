@@ -18,6 +18,11 @@ export default new Router({
       component: () => import('../pages/myEditor')
     },
     {
+      path: '/assignTask',
+      name: 'assignLogin',
+      component: () => import('../pages/assignLogin')
+    },
+    {
       path: '/assign',
       name: 'assignTask',
       component: () => import('../pages/assignTask')
@@ -31,6 +36,11 @@ export default new Router({
       path: '/check',
       name: 'check',
       component: () => import('../pages/check')
+    },
+    {
+      path: '/userCenter/subTask',
+      name: 'subtaskLogin',
+      component: () => import('../pages/subtaskLogin')
     },
 
   ]

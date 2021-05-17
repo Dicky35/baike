@@ -43,7 +43,7 @@
         label="状态值"
         prop="status">
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="300">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -54,10 +54,16 @@
             size="mini"
             @click="handlePreview(scope.row)">预览
           </el-button>
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            @click="handleTest(scope.row)">测试-->
-          <!--          </el-button>-->
+          <el-button v-if="scope.row.status != 3"
+            size="mini"
+            type="primary"
+            @click="handleSubmit(scope.row)">提交审核
+          </el-button>
+          <el-button v-else
+                     size="mini"
+                     type="primary"
+          disabled="true">审核中
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,10 +78,11 @@ import entryReview from '../components/entryReview'
 
 export default {
   name: 'edit',
+  inject: ['reload'],
   components: {
     entryReview
   },
-  data () {
+  data() {
     return {
       serverUrl: 'http://101.200.34.92:8081',
       user_id: 0,
@@ -88,11 +95,11 @@ export default {
       drawerFlag: false
     }
   },
-  mounted () {
+  mounted() {
     this.init()
   },
   methods: {
-    init () {
+    init() {
       console.log('跳转信息: ', this.$route)
       // 调用接口初始化
 
@@ -106,7 +113,7 @@ export default {
         this.user_id = this.$route.params.user_id
         this.user_token = this.$route.params.user_token
         this.task_id = this.$route.params.task_id
-        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id})
+        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id,user_token:this.user_token})
         window.sessionStorage.setItem('user', loginData)
       }
 
@@ -114,13 +121,14 @@ export default {
       console.log('登录信息: ', msg)
 
       this.$axios
-        .post(this.serverUrl + '/api/searchUserId', msg)
+        .post(this.serverUrl + '/inside_api/entry/searchUserId', msg)
         .then(res => {
           console.log('词条搜索结束')
           console.log(res)
           // this.tableData = res.data.data
 
           this.tableData = res.data.data
+
           // for (let i in res.data.data) {
           //   let item = res.data.data[i]
           //   console.log('item: ', item)
@@ -143,17 +151,13 @@ export default {
           // }
         })
     },
-    getDataByUserId: function () {
-      // POST需要的UserId到后端，得到返回的User相关的所有信息
-      // 需要传入UserId，token?
-
-    },
     sendData: function () {
       // 将新的词条信息传回后端，需要包含词条的所有属性，UserId，SubtaskId？
 
     },
     handleEdit: function (row) {
       this.selectTable = row
+      console.log('准备编辑：',row)
       window.sessionStorage.setItem('item', JSON.stringify(this.selectTable))
       this.$router.push({
         name: 'myEditor',
@@ -165,6 +169,23 @@ export default {
           data: this.selectTable
         }
       })
+    },
+    handleSubmit(row) {
+      this.selectTable = row
+      this.selectTable.operation = 1
+      let msg = JSON.stringify(this.selectTable)
+      this.$axios
+        .post(this.serverUrl + '/inside_api/entry/updateEditItem', msg)
+        .then(res => {
+          console.log('完善词条提交审核')
+          console.log(res)
+          this.reload()
+        })
+        .catch(error => {
+          console.log('提交失败')
+          console.log(error)
+          this.reload()
+        })
     },
     handlePreview(row) {
       this.selectTable = row

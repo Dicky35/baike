@@ -96,8 +96,26 @@
           title="审核词条"
           :visible.sync="dialogCheckVisible"
           width="30%">
-          <el-input v-model="checkInput" placeholder="请输入审核人员数"></el-input>
+
+          <!--          <el-input v-model="checkInput" placeholder="请输入审核人员数"></el-input>-->
+          <div v-for="(item,index) in arrayData" :key="item.id">
+            <el-input
+              type="input"
+              placeholder="请填写需审核词条数"
+              v-model="item.data"
+            >
+              <el-button type="danger"
+                         slot="append"
+                         class="el-icon-remove-outline"
+                         :style="{color:'red'}"
+                         @click="deleteChecker(item,index)"></el-button>
+            </el-input>
+
+          </div>
+          <el-button type="primary" @click="addChecker">添加审核人员</el-button>
+
           <span slot="footer" class="dialog-footer">
+            <p>总词条数：{{ this.create_item_cnt + this.init_item_cnt }}条</p>
             <el-button @click="dialogCheckVisible = false">取 消</el-button>
             <el-button type="primary" @click="handleCheck(checkInput)">发 布</el-button>
           </span>
@@ -138,22 +156,22 @@
                 trigger="hover">
                 <el-form :model="scope.row" label-width="80px">
                   <el-form-item label="任务类型">
-                    <span>{{scope.row.name}}</span>
+                    <span>{{ scope.row.name }}</span>
                   </el-form-item>
                   <el-form-item label="任务描述">
-                    <span>{{scope.row.content}}</span>
+                    <span>{{ scope.row.content }}</span>
                   </el-form-item>
                   <el-form-item label="词条数" v-show="scope.row.type !== 3">
-                    <span>{{scope.row.itemCount}}</span>
+                    <span>{{ scope.row.itemCount }}</span>
                   </el-form-item>
                   <el-form-item label="人员数" v-show="scope.row.type === 3">
-                    <span>{{scope.row.itemCount}}</span>
+                    <span>{{ scope.row.itemCount }}</span>
                   </el-form-item>
                   <el-form-item label="id列表" v-show="scope.row.type === 2">
-                    <span>{{scope.row.itemTable}}</span>
+                    <span>{{ scope.row.itemTable }}</span>
                   </el-form-item>
                   <el-form-item label="任务金额">
-                    <span>{{scope.row.money}}</span>
+                    <span>{{ scope.row.money }}</span>
                   </el-form-item>
 
                 </el-form>
@@ -205,7 +223,19 @@ export default {
       dialogCheckVisible: false,
       drawerFlag: false,
       createInput: '',
-      checkInput: ''
+      checkInput: '',
+
+      // 审核词条数=所有词条数=初始化+待新建
+      init_item_cnt: 0, // 初始化的词条数量
+      create_item_cnt: 0, // 需要新建的词条数量
+
+      arrayData: [
+        {
+          id: '1',
+          data: ''
+        }
+      ],
+      dataNum: 0
     }
   },
   mounted() {
@@ -217,6 +247,8 @@ export default {
       // this.tableData = []
 
       this.getInitItems() // 需要改成从后端获取数据
+      console.log('assignTask传入参数：', this.$route)
+
 
       if (JSON.stringify(this.$route.params) == '{}') {
         console.log('读取session信息')
@@ -228,9 +260,23 @@ export default {
         this.user_id = this.$route.params.user_id
         this.user_token = this.$route.params.user_token
         this.task_id = this.$route.params.task_id
-        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id})
+        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id, user_token: this.user_token})
         window.sessionStorage.setItem('user', loginData)
       }
+    },
+    deleteChecker(item, index) {
+      if (this.arrayData.length <= 1) { // 如果只有一个输入框则不可以删除
+        return false
+      }
+      this.arrayData.splice(index, 1)// 删除了数组中对应的数据也就将这个位置的输入框删除
+    },
+    addChecker(item) {
+      this.arrayData.push(// 增加就push进数组一个新值
+        {
+          id: this.dataNum++,
+          data: ''
+        }
+      )
     },
     getInitItems() {
       for (let i = 1; i < 109; i++) {
@@ -250,14 +296,15 @@ export default {
         }
         this.tableData.push(test)
       }
+      this.init_item_cnt = this.tableData.length
     },
     toggleSelection(rows) {
       if (rows) {
         rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
+          this.$refs.multipleTable.toggleRowSelection(row)
+        })
       } else {
-        this.$refs.multipleTable.clearSelection();
+        this.$refs.multipleTable.clearSelection()
       }
     },
     handleSelectionChange(rows) {
@@ -306,15 +353,26 @@ export default {
     handleCreate(input) {
       if (input.length > 0) {
         let itemCount = parseInt(input)
+        this.create_item_cnt += itemCount//////////////////////////////////////////////
         this.addSubtask(1, 500.00, itemCount, [])
       }
       this.dialogCreateVisible = false
       this.createInput = ''
     },
     handleCheck(input) {
-      if (input.length > 0) {
-        let itemCount = parseInt(input)
-        this.addSubtask(3, 500.00, itemCount, [])
+      let checkCnt = 0
+      let checkArray = []
+      this.arrayData.forEach(item => {
+        checkArray.push(parseInt(item.data))
+        checkCnt += parseInt(item.data)
+      })
+
+      if (checkArray.length > 0) {
+        if (checkCnt != this.init_item_cnt + this.create_item_cnt) {
+          this.$message.warning('请确保总审核词条数和总词条数一致')
+          return
+        }
+        this.addSubtask(3, 500.00, checkArray.length, checkArray)
       }
       this.dialogCheckVisible = false
       this.checkInput = ''
@@ -329,7 +387,12 @@ export default {
     handleUndo(index, row) {
       // console.log('撤销 index: ', index)
       this.subtaskTableData.splice(index, 1)
-      if (row.type === 2) {
+
+      if (row.type === 1) { // 新建任务
+        this.create_item_cnt -= row.itemCount
+      }
+
+      if (row.type === 2) { // 完善任务，撤销后需要将初始化的词条前面的禁止勾选取消
         for (let id in row.itemTable) {
           this.disableItemTable.splice(this.disableItemTable.indexOf(id), 1)
         }
@@ -343,11 +406,14 @@ export default {
 
       let msg = JSON.stringify({
         task_id: this.task_id,
-        token: this.user_token,
         subtask: this.subtaskTableData
       })
+
+      console.log('传入信息：', msg)
+      console.log('当前token：', this.user_token)
+
       this.$axios
-        .post(this.serverUrl + '/api/taskSplit', msg)
+        .post(this.serverUrl + '/inside_api/entry/taskSplit', msg)
         .then(res => {
           console.log('发布任务成功', msg)
           this.displayMessage('success', '发布任务成功')
@@ -399,7 +465,7 @@ export default {
   width: 100%;
   display: flex;
   top: 50px;
-  bottom: 100px;
+  bottom: 50px;
 }
 
 .left-group, .right-group {
@@ -414,17 +480,23 @@ export default {
   text-align: center;
 
 }
+
 .mid-button-center {
   position: absolute;
   left: 50%;
-  top:50%;
-  transform: translate(-50%,-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
-.mid-button-bottom {
-  align-items: center;
 
+.mid-button-bottom {
+  /*align-items: center;*/
+
+  /*position: absolute;*/
+  /*bottom: 0px;*/
   position: absolute;
+  left: 50%;
   bottom: 0px;
+  transform: translate(-50%, -50%);
 }
 
 .foot {

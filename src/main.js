@@ -18,9 +18,9 @@ Vue.config.productionTip = false
 Object.defineProperty(Vue.prototype, '$axios', { value: axios })
 
 axios.interceptors.request.use(function (config) {
-  let token = localStorage.getItem('token')
+  let token = window.sessionStorage.getItem('token')
   if (token) {
-    config.headers.Authorization = token
+    config.headers.Authorization = 'JWT '+token
   }
   return config
 }, function (error) {
