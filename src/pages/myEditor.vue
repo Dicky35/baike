@@ -73,7 +73,10 @@
       <div class="editor-main">
         <div class="basic-info">
           <div class="basic-info-head">
-            <h1 class="basic-info-title">{{ form.name }}</h1>
+            <!--            <h1 class="basic-info-title">{{ form.name }}</h1>-->
+
+            <el-input class="basic-info-title" v-model="form.name"></el-input>
+
             <el-tag
               :key="tag"
               v-for="tag in form.field"
@@ -214,43 +217,43 @@
         </div>
       </div>
       <!-- 上下位关系 -->
-      <div class="relationship-side">
-        <div class="relationship-side-title">
-          <h5>词条关系</h5>
-        </div>
-        <div class="relationship-side-operation">
-          <el-alert
-            title="请谨慎选择词条关系"
-            type="warning"
-            show-icon
-            :closable="false"
-            style="width: 250px;margin: 0 auto 10px;"
-            center
-          ></el-alert>
-          <el-autocomplete
-            style="margin-left: 15px;width: 150px;"
-            :fetch-suggestions="querySearch"
-            placeholder="请输入词条名称"
-            :trigger-on-focus="false"
-            v-model="relationValue"
-          ></el-autocomplete>
-          <el-select v-model="relation" placeholder="关系选择" style="width: 150px">
-            <el-option v-for="item in optionInRelation" :key="item" :label="item" :value="item"></el-option>
-          </el-select>
-          <el-button class="relation-button-add" type="primary" @click="toAddRelation">添加</el-button>
-        </div>
-        <div class="relation-table">
-          <el-table :data="form.relation" style="width: 100%">
-            <el-table-column prop="entry" label="词条名" width="120px"></el-table-column>
-            <el-table-column prop="type" label="关系" width="120px"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="toDeleteRelation(scope.$index)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
+      <!--      <div class="relationship-side">-->
+      <!--        <div class="relationship-side-title">-->
+      <!--          <h5>词条关系</h5>-->
+      <!--        </div>-->
+      <!--        <div class="relationship-side-operation">-->
+      <!--          <el-alert-->
+      <!--            title="请谨慎选择词条关系"-->
+      <!--            type="warning"-->
+      <!--            show-icon-->
+      <!--            :closable="false"-->
+      <!--            style="width: 250px;margin: 0 auto 10px;"-->
+      <!--            center-->
+      <!--          ></el-alert>-->
+      <!--          <el-autocomplete-->
+      <!--            style="margin-left: 15px;width: 150px;"-->
+      <!--            :fetch-suggestions="querySearch"-->
+      <!--            placeholder="请输入词条名称"-->
+      <!--            :trigger-on-focus="false"-->
+      <!--            v-model="relationValue"-->
+      <!--          ></el-autocomplete>-->
+      <!--          <el-select v-model="relation" placeholder="关系选择" style="width: 150px">-->
+      <!--            <el-option v-for="item in optionInRelation" :key="item" :label="item" :value="item"></el-option>-->
+      <!--          </el-select>-->
+      <!--          <el-button class="relation-button-add" type="primary" @click="toAddRelation">添加</el-button>-->
+      <!--        </div>-->
+      <!--        <div class="relation-table">-->
+      <!--          <el-table :data="form.relation" style="width: 100%">-->
+      <!--            <el-table-column prop="entry" label="词条名" width="120px"></el-table-column>-->
+      <!--            <el-table-column prop="type" label="关系" width="120px"></el-table-column>-->
+      <!--            <el-table-column label="操作">-->
+      <!--              <template slot-scope="scope">-->
+      <!--                <el-button size="mini" type="danger" @click="toDeleteRelation(scope.$index)">删除</el-button>-->
+      <!--              </template>-->
+      <!--            </el-table-column>-->
+      <!--          </el-table>-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
     <!-- 添加参考资料 -->
     <el-dialog title="添加参考资料" :visible.sync="others.dialogFormVisible" width="500px">
@@ -937,6 +940,7 @@ export default {
         .catch(error => {
           console.log('保存修改失败')
           console.log(error)
+          this.$message.error('保存修改失败')
         })
 
       // this.$axios
@@ -1045,7 +1049,7 @@ export default {
           if (error.response) {
             this.$message({
               message: error.response.data.msg,
-              type: 'warning'
+              type: 'error'
             })
           }
         })
@@ -1068,6 +1072,7 @@ export default {
         })
         .catch(error => {
           console.log(error)
+          this.$message.error('图片上传失败，请重新尝试！')
         })
     },
     // 词条图片上传限制
@@ -1249,8 +1254,9 @@ export default {
   position: relative;
   color: rgb(178, 178, 178);
   margin-left: 30px;
-  margin-right: 15px;
-  display: inline;
+  /*margin-right: 15px;*/
+  /*display: inline;*/
+  width: 100px;
 }
 
 .basic-info-form {

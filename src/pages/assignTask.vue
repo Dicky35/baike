@@ -210,6 +210,7 @@ export default {
       task_id: 0,
       user_id: 0,
       user_token: '',
+      inToken: '',
 
       leftCurrentPage: 1, // 初始化词条表格的当前页
       pageSize: 10, // 表格每页展示的词条数量
@@ -229,6 +230,7 @@ export default {
       init_item_cnt: 0, // 初始化的词条数量
       create_item_cnt: 0, // 需要新建的词条数量
 
+
       arrayData: [
         {
           id: '1',
@@ -246,7 +248,7 @@ export default {
       // 调用获取
       // this.tableData = []
 
-      this.getInitItems() // 需要改成从后端获取数据
+
       console.log('assignTask传入参数：', this.$route)
 
 
@@ -263,6 +265,27 @@ export default {
         let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id, user_token: this.user_token})
         window.sessionStorage.setItem('user', loginData)
       }
+
+      this.inToken = window.sessionStorage.getItem('token')
+
+      if (this.inToken.length <= 0) {
+        let msg = JSON.stringify({token: this.user_token})
+        this.$axios
+          .post(this.serverUrl + '/inside_api/entry/userLogin', msg)
+          .then(res => {
+            console.log('token校验结果：', res)
+            this.inToken = res.data.data.inside_token
+            window.sessionStorage.setItem('token', this.inToken)
+          })
+          .catch(error => {
+            console.log('用户校验失败：', error)
+            this.$message.error('用户校验失败')
+            this.inToken = ''
+          })
+      }
+
+      this.getInitItems() // 需要改成从后端获取数据
+
     },
     deleteChecker(item, index) {
       if (this.arrayData.length <= 1) { // 如果只有一个输入框则不可以删除
@@ -279,24 +302,40 @@ export default {
       )
     },
     getInitItems() {
-      for (let i = 1; i < 109; i++) {
-        let test = {
-          item_id: i,
-          original_id: -1,
-          name: '柴犬',
-          field: [],
-          imageUrl: '',
-          intro: 'intro',
-          info_box: [],
-          content: 'content',
-          reference: [],
-          relation: [],
-          has_selected_supply: 0,
-          status: 0
-        }
-        this.tableData.push(test)
-      }
-      this.init_item_cnt = this.tableData.length
+      // for (let i = 1; i < 109; i++) {
+      //   let test = {
+      //     item_id: i,
+      //     original_id: -1,
+      //     name: '柴犬',
+      //     field: [],
+      //     imageUrl: '',
+      //     intro: 'intro',
+      //     info_box: [],
+      //     content: 'content',
+      //     reference: [],
+      //     relation: [],
+      //     has_selected_supply: 0,
+      //     status: 0
+      //   }
+      //   this.tableData.push(test)
+      // }
+
+      this.$axios
+        .post(this.serverUrl + '/inside_api/entry/assignTask', JSON.stringify({
+          taskId: this.task_id
+        }))
+        .then(res => {
+          console.log('后端返回的初始化词条：', res.data.data.items)
+          res.data.data.items.forEach(item => {
+            this.tableData.push(item)
+          })
+          this.init_item_cnt = this.tableData.length
+        })
+        .catch(error => {
+          console.log(error)
+          this.$message.error('获取初始化词条失败')
+        })
+
     },
     toggleSelection(rows) {
       if (rows) {
@@ -401,6 +440,7 @@ export default {
     handleAssignConfirm() {
       if (this.subtaskTableData.length <= 0) {
         console.log('任务列表为空，发布失败')
+        this.$message.warning('任务列表为空，发布失败')
         return
       }
 

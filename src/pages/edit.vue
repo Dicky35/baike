@@ -62,7 +62,7 @@
           <el-button v-else
                      size="mini"
                      type="primary"
-          disabled="true">审核中
+          disabled="true">正在审核
           </el-button>
         </template>
       </el-table-column>
@@ -179,11 +179,13 @@ export default {
         .then(res => {
           console.log('完善词条提交审核')
           console.log(res)
+          this.$message.success('提交审核成功')
           this.reload()
         })
         .catch(error => {
           console.log('提交失败')
           console.log(error)
+          this.$message.error('提交审核失败')
           this.reload()
         })
     },

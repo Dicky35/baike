@@ -151,6 +151,7 @@ export default {
         })
         .catch(error => {
           console.log('审核词条异常: ',error)
+          this.$message.error('审核词条异常，重新加载页面')
           this.reload()
         })
 
@@ -175,6 +176,7 @@ export default {
         })
         .catch(error => {
           console.log('审核词条异常: ',error)
+          this.$message.error('审核词条异常，重新加载页面')
           this.reload()
         })
     },
