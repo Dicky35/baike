@@ -38,7 +38,7 @@ export default new Router({
       component: () => import('../pages/check')
     },
     {
-      path: '/userCenter/subTask',
+      path: '/subTask',
       name: 'subtaskLogin',
       component: () => import('../pages/subtaskLogin')
     },

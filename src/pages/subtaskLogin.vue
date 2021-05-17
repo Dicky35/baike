@@ -13,7 +13,7 @@ export default {
       token: '',
       inside_token: '',
       role: 2,
-      jumpName: '/edit'
+      jumpName: 'edit'
     }
   },
   mounted() {
