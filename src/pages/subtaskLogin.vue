@@ -22,7 +22,7 @@ export default {
   methods: {
     init() {
 
-      console.log('subtaskLogin登录信息: ',this.$route)
+      console.log('subtaskLogin登录信息: ', this.$route)
       if (JSON.stringify(this.$route.query) == '{}') {
         this.task_id = 0
         this.user_id = 0
@@ -38,18 +38,16 @@ export default {
 
       let msg = JSON.stringify({token: this.token})
 
-      console.log('任务划分登录-请求后台校验：',msg)
+      console.log('任务划分登录-请求后台校验：', msg)
       this.$axios
         .post(this.serverUrl + '/inside_api/entry/userLogin', msg)
         .then(res => {
           console.log('token校验结果：', res)
           this.inside_token = res.data.data.inside_token
-          this.role=res.data.data.role
-          this.user_id=res.data.data.user_id
+          this.role = res.data.data.role
+          this.user_id = res.data.data.user_id
           console.log(this.inside_token)
           window.sessionStorage.setItem('token', this.inside_token)
-
-
 
 
           if (this.role == 2) {
@@ -61,7 +59,7 @@ export default {
           console.log('subtaskLogin: ', this.task_id, ' ', this.token, ' ', this.user_id)
           this.$router.push(
             {
-              name: this.jumpName,
+              path: '/' + this.jumpName,
               query: {
                 task_id: this.task_id,
                 user_token: this.token,
@@ -75,7 +73,6 @@ export default {
         .catch(error => {
           console.log('用户校验失败：', error)
         })
-
 
 
       // 将task_id和token发送到后端进行校验及存储

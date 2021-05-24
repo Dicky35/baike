@@ -47,7 +47,7 @@ export default {
 
           this.$router.push(
             {
-              name: 'assignTask',
+              path: '/assign',
               query: {
                 task_id: this.task_id,
                 user_token: this.inToken,

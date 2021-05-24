@@ -928,7 +928,7 @@ export default {
           console.log(res)
 
           this.$router.push({
-            name: 'edit',
+            path: '/edit',
             query: {
               user_id: this.user_id,
               user_token: this.user_token,

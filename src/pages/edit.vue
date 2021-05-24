@@ -160,7 +160,7 @@ export default {
       console.log('准备编辑：',row)
       window.sessionStorage.setItem('item', JSON.stringify(this.selectTable))
       this.$router.push({
-        name: 'myEditor',
+        path: '/editor',
         // query: this.selectTable
         query: {
           user_id: this.user_id,

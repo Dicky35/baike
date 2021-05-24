@@ -240,19 +240,19 @@ export default {
     },
     assignLogin() {
       this.$router.push({
-        name: 'assignLogin',
+        path: '/assignTask',
         query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     },
     subtaskLogin() {
       this.$router.push({
-        name: 'subtaskLogin',
+        path: '/subTask',
         query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     },
     goalPage(){
       this.$router.push({
-        name: 'goal',
+        path: '/goal',
         query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     }
