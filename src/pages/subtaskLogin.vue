@@ -23,14 +23,14 @@ export default {
     init() {
 
       console.log('subtaskLogin登录信息: ',this.$route)
-      if (JSON.stringify(this.$route.params) == '{}') {
+      if (JSON.stringify(this.$route.query) == '{}') {
         this.task_id = 0
         this.user_id = 0
         this.token = ''
       } else {
-        this.task_id = this.$route.params.task_id
-        this.user_id = this.$route.params.user_id
-        this.token = this.$route.params.token
+        this.task_id = this.$route.query.task_id
+        this.user_id = this.$route.query.user_id
+        this.token = this.$route.query.token
         // 调用后端进行校验
 
 
@@ -62,7 +62,7 @@ export default {
           this.$router.push(
             {
               name: this.jumpName,
-              params: {
+              query: {
                 task_id: this.task_id,
                 user_token: this.token,
                 user_id: this.user_id
@@ -91,7 +91,7 @@ export default {
       // this.$router.push(
       //   {
       //     name: this.jumpName,
-      //     params: {
+      //     query: {
       //       task_id: this.task_id,
       //       user_token: this.token,
       //       user_id: this.user_id

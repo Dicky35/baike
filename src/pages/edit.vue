@@ -103,16 +103,16 @@ export default {
       console.log('跳转信息: ', this.$route)
       // 调用接口初始化
 
-      if (JSON.stringify(this.$route.params) == '{}') {
+      if (JSON.stringify(this.$route.query) == '{}') {
         console.log('读取session信息')
         let loginData = JSON.parse(window.sessionStorage.getItem('user'))
         this.user_id = loginData.user_id
         this.user_token = loginData.user_token
         this.task_id = loginData.task_id
       } else {
-        this.user_id = this.$route.params.user_id
-        this.user_token = this.$route.params.user_token
-        this.task_id = this.$route.params.task_id
+        this.user_id = this.$route.query.user_id
+        this.user_token = this.$route.query.user_token
+        this.task_id = this.$route.query.task_id
         let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id,user_token:this.user_token})
         window.sessionStorage.setItem('user', loginData)
       }
@@ -161,7 +161,7 @@ export default {
       window.sessionStorage.setItem('item', JSON.stringify(this.selectTable))
       this.$router.push({
         name: 'myEditor',
-        // params: this.selectTable
+        // query: this.selectTable
         query: {
           user_id: this.user_id,
           user_token: this.user_token,

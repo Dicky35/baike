@@ -815,7 +815,7 @@ export default {
       //   this.source = 1
       //   this.$axios
       //     .get('/data/fetchPageById', {
-      //       params: {
+      //       query: {
       //         entryId: new Number(this.$route.query.id)
       //       }
       //     })
@@ -929,7 +929,7 @@ export default {
 
           this.$router.push({
             name: 'edit',
-            params: {
+            query: {
               user_id: this.user_id,
               user_token: this.user_token,
               task_id: this.task_id
@@ -1033,7 +1033,7 @@ export default {
     refreshAttribute(attribute) {
       this.$axios
         .get(this.serverUrl + '/data/getAttribute', {
-          params: {
+          query: {
             category: attribute
           }
         })

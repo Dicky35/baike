@@ -30,6 +30,7 @@
       <br/>
       <el-button type="primary" @click="assignLogin">assignLogin Page</el-button>
       <el-button type="primary" @click="subtaskLogin">subtaskLogin Page</el-button>
+      <el-button type="primary" @click="goalPage">goal Page</el-button>
     </div>
     <el-upload
       class="avatar-uploader"
@@ -246,6 +247,12 @@ export default {
     subtaskLogin() {
       this.$router.push({
         name: 'subtaskLogin',
+        params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+      })
+    },
+    goalPage(){
+      this.$router.push({
+        name: 'goal',
         params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     }

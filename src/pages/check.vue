@@ -97,16 +97,16 @@ export default {
       // 调用接口初始化
 
       // 信息初始化，如果前一个页面没有传入参数信息，则读取sessionStorage来设置参数
-      if (JSON.stringify(this.$route.params) == '{}') {
+      if (JSON.stringify(this.$route.query) == '{}') {
         console.log('读取session信息')
         let loginData = JSON.parse(window.sessionStorage.getItem('user'))
         this.user_id = loginData.user_id
         this.user_token = loginData.user_token
         this.task_id = loginData.task_id
       } else {
-        this.user_id = this.$route.params.user_id
-        this.user_token = this.$route.params.user_token
-        this.task_id = this.$route.params.task_id
+        this.user_id = this.$route.query.user_id
+        this.user_token = this.$route.query.user_token
+        this.task_id = this.$route.query.task_id
         let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id})
         window.sessionStorage.setItem('user', loginData)
       }

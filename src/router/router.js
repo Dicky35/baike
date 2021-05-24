@@ -38,6 +38,11 @@ export default new Router({
       component: () => import('../pages/check')
     },
     {
+      path: '/goal',
+      name: 'goal',
+      component: () => import('../pages/goal')
+    },
+    {
       path: '/subTask',
       name: 'subtaskLogin',
       component: () => import('../pages/subtaskLogin')

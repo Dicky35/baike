@@ -20,14 +20,14 @@ export default {
   methods: {
     init() {
       console.log('划分任务登录页面-传入参数：',this.$route)
-      if (JSON.stringify(this.$route.params) == '{}') {
+      if (JSON.stringify(this.$route.query) == '{}') {
         this.task_id = 0
         this.user_id = 0
         this.token = ''
       } else {
-        this.task_id = this.$route.params.task_id
-        this.user_id = this.$route.params.user_id
-        this.token = this.$route.params.token
+        this.task_id = this.$route.query.task_id
+        this.user_id = this.$route.query.user_id
+        this.token = this.$route.query.token
       }
 
       // 将task_id和token发送到后端进行校验及存储
@@ -48,7 +48,7 @@ export default {
           this.$router.push(
             {
               name: 'assignTask',
-              params: {
+              query: {
                 task_id: this.task_id,
                 user_token: this.inToken,
                 user_id: this.user_id
