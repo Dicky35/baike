@@ -446,7 +446,8 @@ export default {
 
       let msg = JSON.stringify({
         task_id: this.task_id,
-        subtask: this.subtaskTableData
+        subtask: this.subtaskTableData,
+        inside_token: window.sessionStorage.getItem('token')
       })
 
       console.log('传入信息：', msg)

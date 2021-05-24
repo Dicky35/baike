@@ -114,7 +114,7 @@ export default {
     editPage: function (userId, userToken, taskId) {
       this.$router.push({
         name: 'edit',
-        params: {
+        query: {
           user_id: userId,
           user_token: userToken,
           task_id: taskId
@@ -124,7 +124,7 @@ export default {
     checkPage: function (userId, userToken, taskId) {
       this.$router.push({
         name: 'check',
-        params: {
+        query: {
           user_id: userId,
           user_token: userToken,
           task_id: taskId
@@ -137,7 +137,7 @@ export default {
     handleAssign: function (userId, userToken, taskId) {
       this.$router.push({
         name: 'assignTask',
-        params: {
+        query: {
           user_id: userId,
           user_token: userToken,
           task_id: taskId
@@ -241,19 +241,19 @@ export default {
     assignLogin() {
       this.$router.push({
         name: 'assignLogin',
-        params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+        query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     },
     subtaskLogin() {
       this.$router.push({
         name: 'subtaskLogin',
-        params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+        query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     },
     goalPage(){
       this.$router.push({
         name: 'goal',
-        params: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+        query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
       })
     }
     // getInitItems () {

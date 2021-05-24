@@ -935,7 +935,6 @@ export default {
               task_id: this.task_id
             }
           })
-
         })
         .catch(error => {
           console.log('保存修改失败')
