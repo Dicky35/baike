@@ -50,8 +50,9 @@ export default {
               path: '/assign',
               query: {
                 task_id: this.task_id,
-                user_token: this.inToken,
-                user_id: this.user_id
+                user_token: this.token,
+                user_id: this.user_id,
+                inside_token: this.inToken
               }
             }
           )

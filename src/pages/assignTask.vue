@@ -276,15 +276,18 @@ export default {
             console.log('token校验结果：', res)
             this.inToken = res.data.data.inside_token
             window.sessionStorage.setItem('token', this.inToken)
+            this.getInitItems() // 需要改成从后端获取数据
           })
           .catch(error => {
             console.log('用户校验失败：', error)
             this.$message.error('用户校验失败')
             this.inToken = ''
           })
+      } else {
+        this.getInitItems() // 需要改成从后端获取数据
       }
 
-      this.getInitItems() // 需要改成从后端获取数据
+      //this.getInitItems() // 需要改成从后端获取数据
 
     },
     deleteChecker(item, index) {
