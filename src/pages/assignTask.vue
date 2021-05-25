@@ -328,7 +328,7 @@ export default {
           taskId: this.task_id
         }))
         .then(res => {
-          console.log('后端返回的初始化词条：', res.data.data.items)
+          console.log('后端返回的回复：', res)
           res.data.data.items.forEach(item => {
             this.tableData.push(item)
           })
