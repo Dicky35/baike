@@ -11,7 +11,8 @@ export default {
       task_id: 0,
       user_id: 0,
       token: '',
-      inToken: ''
+      inToken: '',
+      fbzId: 0
     }
   },
   mounted() {
@@ -19,15 +20,16 @@ export default {
   },
   methods: {
     init() {
-      console.log('划分任务登录页面-传入参数：',this.$route)
+      console.log('划分任务登录页面-传入参数：', this.$route)
       if (JSON.stringify(this.$route.query) == '{}') {
         this.task_id = 0
         this.user_id = 0
         this.token = ''
       } else {
-        this.task_id = this.$route.query.task_id
-        this.user_id = this.$route.query.user_id
+        this.task_id = this.$route.query.taskId
+        this.user_id = this.$route.query.userId
         this.token = this.$route.query.token
+        this.fbzId = this.$route.query.fbzId
       }
 
       // 将task_id和token发送到后端进行校验及存储
@@ -35,7 +37,7 @@ export default {
       // 错误则发送错误信息，拒绝访问？
       let msg = JSON.stringify({token: this.token})
 
-      console.log('任务划分登录-请求后台校验：',msg)
+      console.log('任务划分登录-请求后台校验：', msg)
       this.$axios
         .post(this.serverUrl + '/inside_api/entry/userLogin', msg)
         .then(res => {
@@ -52,7 +54,8 @@ export default {
                 task_id: this.task_id,
                 user_token: this.token,
                 user_id: this.user_id,
-                inside_token: this.inToken
+                inside_token: this.inToken,
+                fbzId: this.fbzId
               }
             }
           )

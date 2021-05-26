@@ -12,6 +12,10 @@
       <template slot="prepend">专题Id</template>
     </el-input>
 
+    <el-input placeholder="请输入" v-model="fbzId">
+      <template slot="prepend">发布者Id</template>
+    </el-input>
+
     <el-button type='primary' @click="editPage(user_id,user_token,task_id)"> 编辑</el-button>
     <el-button type='primary' @click="checkPage(user_id,user_token,task_id)">审核</el-button>
     <el-button type="primary" @click="handleAssign(user_id,user_token,task_id)">任务划分</el-button>
@@ -60,6 +64,7 @@ export default {
       user_id: 3,
       user_token: '3',
       task_id: 5,
+      fbzId: 99,
       circleUrl:
         'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
       squareUrl:
@@ -88,8 +93,8 @@ export default {
             // const blob = new Blob([result], {type: contentType})
             //
             // this.form.imageUrl = window.URL.createObjectURL(blob)
-            this.form.imageUrl='http://101.200.34.92:9010/download/'+response.data.filename
-            console.log('imageUrl: ',this.form.imageUrl)
+            this.form.imageUrl = 'http://101.200.34.92:9010/download/' + response.data.filename
+            console.log('imageUrl: ', this.form.imageUrl)
 
           }
         })
@@ -202,7 +207,7 @@ export default {
     assignTask() {
       let msg = JSON.stringify({token: this.user_token})
 
-      console.log('任务划分登录-请求后台校验：',msg)
+      console.log('任务划分登录-请求后台校验：', msg)
       this.$axios
         .post(this.serverUrl + '/inside_api/entry/userLogin', msg)
         .then(res => {
@@ -241,16 +246,16 @@ export default {
     assignLogin() {
       this.$router.push({
         path: '/assignTask',
-        query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+        query: {userId: this.user_id, taskId: this.task_id, token: this.user_token, fbzId: this.fbzId}
       })
     },
     subtaskLogin() {
       this.$router.push({
         path: '/subTask',
-        query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+        query: {userId: this.user_id, taskId: this.task_id, token: this.user_token}
       })
     },
-    goalPage(){
+    goalPage() {
       this.$router.push({
         path: '/goal',
         query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}

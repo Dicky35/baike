@@ -28,8 +28,8 @@ export default {
         this.user_id = 0
         this.token = ''
       } else {
-        this.task_id = this.$route.query.task_id
-        this.user_id = this.$route.query.user_id
+        this.task_id = this.$route.query.taskId
+        this.user_id = this.$route.query.userId
         this.token = this.$route.query.token
         // 调用后端进行校验
 

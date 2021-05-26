@@ -1,9 +1,49 @@
 <template>
   <div>
 
-    <div class="head">
-      <p style="font-size: 20px; ">划分任务页面</p>
-    </div>
+    <el-header >
+      <p style="font-size: 20px; text-align: center">划分任务页面</p>
+      <span style="font-family: 'Arial Black'">专题信息</span>
+      <el-form label-position="left" inline class="demo-table-expand">
+        <el-form-item label="专题ID">
+          <span>{{ this.task.task_id }}</span>
+        </el-form-item>
+        <el-form-item label="专题名称">
+          <span>{{ this.task.name }}</span>
+        </el-form-item>
+        <el-form-item label="专题领域">
+        <span>{{ this.task.field.toString().replace('[','').replace(']','')}}</span>
+        </el-form-item>
+        <el-form-item label="专题酬劳">
+          <span>{{ this.task.reward }}</span>
+        </el-form-item>
+        <el-form-item label="专题描述">
+          <span>{{ this.task.description }}</span>
+        </el-form-item>
+        <el-form-item></el-form-item>
+
+        <el-form-item label="专题内容">
+          <span>{{ this.task.document }}</span>
+        </el-form-item>
+        <el-form-item></el-form-item>
+
+      </el-form>
+<!--      <ul>-->
+<!--        <li>-->
+<!--          <span>姓名：</span><span>{{this.task.task_id}}</span>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <span>注册时间：</span><span>{{adminInfo.create_time}}</span>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <span>管理员权限：</span><span>{{adminInfo.admin}}</span>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <span>管理员 ID：</span><span>{{adminInfo.id}}</span>-->
+<!--        </li>-->
+<!--        </ul>-->
+
+    </el-header>
 
     <div class="container">
       <div class="left-group">
@@ -211,6 +251,7 @@ export default {
       user_id: 0,
       user_token: '',
       inToken: '',
+      fbzId: 99,
 
       leftCurrentPage: 1, // 初始化词条表格的当前页
       pageSize: 10, // 表格每页展示的词条数量
@@ -237,7 +278,17 @@ export default {
           data: ''
         }
       ],
-      dataNum: 0
+      dataNum: 0,
+      task: {
+        description:'',
+        document:'',
+        field:[],
+        hasInitialize:0,
+        name:'',
+        resultFileType:'',
+        reward:'',
+        task_id:1
+      }
     }
   },
   mounted() {
@@ -258,11 +309,18 @@ export default {
         this.user_id = loginData.user_id
         this.user_token = loginData.user_token
         this.task_id = loginData.task_id
+        this.fbzId = loginData.fbzId
       } else {
         this.user_id = this.$route.query.user_id
         this.user_token = this.$route.query.user_token
         this.task_id = this.$route.query.task_id
-        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id, user_token: this.user_token})
+        this.fbzId = this.$route.query.fbzId
+        let loginData = JSON.stringify({
+          user_id: this.user_id,
+          task_id: this.task_id,
+          user_token: this.user_token,
+          fbzId: this.fbzId
+        })
         window.sessionStorage.setItem('user', loginData)
       }
 
@@ -287,7 +345,6 @@ export default {
         this.getInitItems() // 需要改成从后端获取数据
       }
 
-      //this.getInitItems() // 需要改成从后端获取数据
 
     },
     deleteChecker(item, index) {
@@ -305,24 +362,6 @@ export default {
       )
     },
     getInitItems() {
-      // for (let i = 1; i < 109; i++) {
-      //   let test = {
-      //     item_id: i,
-      //     original_id: -1,
-      //     name: '柴犬',
-      //     field: [],
-      //     imageUrl: '',
-      //     intro: 'intro',
-      //     info_box: [],
-      //     content: 'content',
-      //     reference: [],
-      //     relation: [],
-      //     has_selected_supply: 0,
-      //     status: 0
-      //   }
-      //   this.tableData.push(test)
-      // }
-
       this.$axios
         .post(this.serverUrl + '/inside_api/entry/assignTask', JSON.stringify({
           taskId: this.task_id
@@ -333,6 +372,8 @@ export default {
             this.tableData.push(item)
           })
           this.init_item_cnt = this.tableData.length
+          this.task=res.data.data.task
+          console.log('收到的后端task信息：',this.task)
         })
         .catch(error => {
           console.log(error)
@@ -450,7 +491,8 @@ export default {
       let msg = JSON.stringify({
         task_id: this.task_id,
         subtask: this.subtaskTableData,
-        inside_token: window.sessionStorage.getItem('token')
+        inside_token: window.sessionStorage.getItem('token'),
+        fbzId: this.fbzId
       })
 
       console.log('传入信息：', msg)
@@ -459,25 +501,45 @@ export default {
       this.$axios
         .post(this.serverUrl + '/inside_api/entry/taskSplit', msg)
         .then(res => {
-          console.log('发布任务成功', msg)
-          this.displayMessage('success', '发布任务成功')
-          this.subtaskTableData = []
-        })
+            console.log('发布任务成功', msg)
+            this.displayMessage('success', '发布任务成功')
+            this.subtaskTableData = []
+
+
+            // this.$router.push(
+            //   {
+            //     path: '113.207.56.4/taskDetail',
+            //     query: {
+            //       id: this.task_id,
+            //       type: 2,
+            //       token: this.user_token
+            //     }
+            //   }
+            // )
+            let url = 'http://113.207.56.4/taskDetail' + '?id=' + String(this.user_id) + '&type=2&token=' + String(this.user_token)
+            console.log('跳转url：', url)
+            window.location.href = url
+
+          }
+        )
         .catch(error => {
           console.log('发布失败，请重新发布！', error)
           this.$message.error('发布失败，请重新发布！')
         })
+
     },
     handleLeftSizeChange(val) {
       console.log(`每页 ${val} 条`)
       this.leftCurrentPage = 1
       this.pageSize = val
-    },
-    // 当前页改变时触发 跳转其他页
+    }
+    ,
+// 当前页改变时触发 跳转其他页
     handleLeftCurrentChange(val) {
       console.log(`当前页: ${val}`)
       this.leftCurrentPage = val
-    },
+    }
+    ,
     displayMessage(type, msg) {
       this.$message({
         message: msg,
@@ -499,17 +561,17 @@ export default {
 
 <style>
 .head {
-  height: 50px;
+  height: 20%;
   width: 100%;
   text-align: center;
 }
 
 .container {
+  float: top;
   position: absolute;
   width: 100%;
   display: flex;
-  top: 50px;
-  bottom: 50px;
+  top: 500px
 }
 
 .left-group, .right-group {
@@ -539,7 +601,7 @@ export default {
   /*bottom: 0px;*/
   position: absolute;
   left: 50%;
-  bottom: 0px;
+  bottom: 0;
   transform: translate(-50%, -50%);
 }
 
@@ -551,4 +613,19 @@ export default {
   /*background-color: purple;*/
   text-align: center;
 }
+.demo-table-expand {
+  font-size: 0;
+}
+
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.demo-table-expand .el-form-item{
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 100%;
+}
+
 </style>
