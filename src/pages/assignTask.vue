@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="top: 0px">
 
-    <el-header >
+    <div class="head">
       <p style="font-size: 20px; text-align: center">划分任务页面</p>
       <span style="font-family: 'Arial Black'">专题信息</span>
       <el-form label-position="left" inline class="demo-table-expand">
@@ -20,13 +20,10 @@
         <el-form-item label="专题描述">
           <span>{{ this.task.description }}</span>
         </el-form-item>
-        <el-form-item></el-form-item>
 
         <el-form-item label="专题内容">
           <span>{{ this.task.document }}</span>
         </el-form-item>
-        <el-form-item></el-form-item>
-
       </el-form>
 <!--      <ul>-->
 <!--        <li>-->
@@ -42,8 +39,9 @@
 <!--          <span>管理员 ID：</span><span>{{adminInfo.id}}</span>-->
 <!--        </li>-->
 <!--        </ul>-->
-
-    </el-header>
+<br/>
+      <br/>
+    </div>
 
     <div class="container">
       <div class="left-group">
@@ -561,17 +559,15 @@ export default {
 
 <style>
 .head {
-  height: 20%;
+  flex:1;
   width: 100%;
-  text-align: center;
 }
 
 .container {
-  float: top;
   position: absolute;
   width: 100%;
   display: flex;
-  top: 500px
+  flex: 1;
 }
 
 .left-group, .right-group {
@@ -615,6 +611,7 @@ export default {
 }
 .demo-table-expand {
   font-size: 0;
+
 }
 
 .demo-table-expand label {
