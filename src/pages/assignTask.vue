@@ -1,50 +1,64 @@
 <template>
   <div style="top: 0px">
+    <p style="font-size: 20px; text-align: center">划分任务页面</p>
 
     <div class="head">
-      <p style="font-size: 20px; text-align: center">划分任务页面</p>
-      <span style="font-family: 'Arial Black'">专题信息</span>
-      <el-form label-position="left" inline class="demo-table-expand">
-        <el-form-item label="专题ID">
-          <span>{{ this.task.task_id }}</span>
-        </el-form-item>
-        <el-form-item label="专题名称">
-          <span>{{ this.task.name }}</span>
-        </el-form-item>
-        <el-form-item label="专题领域">
-        <span>{{ this.task.field.toString().replace('[','').replace(']','')}}</span>
-        </el-form-item>
-        <el-form-item label="专题酬劳">
-          <span>{{ this.task.reward }}</span>
-        </el-form-item>
-        <el-form-item label="专题描述">
-          <span>{{ this.task.description }}</span>
-        </el-form-item>
+      <el-card>
+        <div slot="header" align="center">
+          <span>专题信息</span>
+        </div>
 
-        <el-form-item label="专题内容">
-          <span>{{ this.task.document }}</span>
-        </el-form-item>
-      </el-form>
-<!--      <ul>-->
-<!--        <li>-->
-<!--          <span>姓名：</span><span>{{this.task.task_id}}</span>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <span>注册时间：</span><span>{{adminInfo.create_time}}</span>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <span>管理员权限：</span><span>{{adminInfo.admin}}</span>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <span>管理员 ID：</span><span>{{adminInfo.id}}</span>-->
-<!--        </li>-->
-<!--        </ul>-->
-<br/>
-      <br/>
-    </div>
+        <el-form label-position="left" inline class="demo-table-expand">
+          <el-form-item label="专题ID">
+            <span>{{ this.task.task_id }}</span>
+          </el-form-item>
+          <el-form-item label="专题名称">
+            <span>{{ this.task.name }}</span>
+          </el-form-item>
+          <el-form-item label="专题领域">
+            <span>{{ this.task.field.toString().replace('[', '').replace(']', '') }}</span>
+          </el-form-item>
+          <el-form-item label="专题酬劳">
+            <span>{{ this.task.reward }}</span>
+          </el-form-item>
+          <el-form-item label="专题描述">
+            <span>{{ this.task.description }}</span>
+          </el-form-item>
 
-    <div class="container">
-      <div class="left-group">
+          <el-form-item label="专题内容">
+            <span>{{ this.task.document }}</span>
+          </el-form-item>
+        </el-form>
+
+      </el-card>
+      <br/><br/>
+      <el-divider>初始化词条表</el-divider>
+      <viewTable>
+        <!-- 左按钮区 -->
+        <template slot="left-field">
+          <el-button>已选择:{{ selectedCount }}条</el-button>
+        </template>
+        <!-- 搜索框 -->
+        <template slot="search-field">
+          <!--          <span>已分配酬劳</span>-->
+          <!--          <el-progress :text-inside="true" :stroke-width="26" :percentage="70" show-text>已分配酬劳</el-progress>-->
+          <el-button>剩余酬劳:{{ money }}</el-button>
+        </template>
+        <!-- 过滤条件区 -->
+
+        <!--        <template slot="filter-field">-->
+        <!--          <el-select v-model="filterType" placeholder="选择类型"></el-select>-->
+        <!--          <el-date-picker type="daterange" start-placeholder="起始时间" end-placeholder="结束时间"></el-date-picker>-->
+        <!--        </template>-->
+        <!-- 右按钮区 -->
+        <template slot="right-field">
+          <el-button type="primary" icon="el-icon-edit" @click="handleComplete">完善词条</el-button>
+          <el-button type="primary" icon="el-icon-document-add" @click="dialogCreateVisible=true">新建词条</el-button>
+          <el-button type="success" icon="el-icon-finished" :disabled="checkButtonAvailable"
+                     @click="dialogCheckVisible=true">审核词条
+          </el-button>
+        </template>
+        <!-- 表格区 -->
         <el-table
           ref="multipleTable"
           :data="tableData.slice((leftCurrentPage-1)*pageSize,leftCurrentPage*pageSize)"
@@ -57,25 +71,38 @@
             :selectable="checkboxT"
             disabled="true"
             :reserve-selection='true'
-            width="55">
+            min-width
+            align="center">
           </el-table-column>
           <el-table-column
             prop="item_id"
             label="ID"
-            width="120">
+            align="center"
+            min-width>
           </el-table-column>
           <el-table-column
             prop="name"
             label="词条名"
-            width="120">
+            align="center"
+            min-width>
           </el-table-column>
           <el-table-column
             prop="field"
             label="领域"
-            width="120">
+            align="center"
+            :formatter="handleFieldTable"
+            min-width>
           </el-table-column>
 
-          <el-table-column label="操作">
+          <el-table-column
+            prop="intro"
+            label="简介"
+            align="center"
+            show-overflow-tooltip="false"
+            min-width>
+          </el-table-column>
+
+          <el-table-column label="操作" min-width align="center">
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -83,7 +110,6 @@
               </el-button>
             </template>
           </el-table-column>
-
         </el-table>
         <el-pagination @size-change="handleLeftSizeChange" @current-change="handleLeftCurrentChange"
                        :current-page="leftCurrentPage"
@@ -91,76 +117,35 @@
                        layout="total, prev, pager, next, jumper"
                        :total="tableData.length">
         </el-pagination>
+      </viewTable>
+      <entryReview :form="selectTable" :drawerFlag="drawerFlag" v-on:handleClose="handleClose"></entryReview>
 
-        <entryReview :form="selectTable" :drawerFlag="drawerFlag" v-on:handleClose="handleClose"></entryReview>
-      </div>
+      <br/><br/>
+      <el-divider>待发布任务列表</el-divider>
 
-      <div class="mid-group">
-        <div class="mid-button-center">
-          <span>已选择{{ selectedCount }}条词条</span>
-          <br/>
-          <el-button @click="handleComplete()">完善词条</el-button>
-          <br/>
-          <el-button @click="dialogCreateVisible=true">新建词条</el-button>
-          <br/>
-          <el-button @click="dialogCheckVisible=true">审核词条</el-button>
-          <br/>
-        </div>
-        <div class="mid-button-bottom">
-          <span>待发布{{ subtaskTableData.length }}项任务</span>
-          <br/>
-          <el-button type="primary" @click="handleAssignConfirm()">发布任务</el-button>
-          <br/>
-          <el-alert
-            title="一次性发布任务数不能超过10项"
-            cneter
-            show-icon
-            type="warning"
-            :closable="false">
-          </el-alert>
-        </div>
-        <el-dialog
-          title="新建词条"
-          :visible.sync="dialogCreateVisible"
-          width="30%">
-          <el-input v-model="createInput" placeholder="请输入新建词条数"></el-input>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogCreateVisible = false">取 消</el-button>
-            <el-button type="primary" @click="handleCreate(createInput)">发 布</el-button>
-          </span>
-        </el-dialog>
-
-        <el-dialog
-          title="审核词条"
-          :visible.sync="dialogCheckVisible"
-          width="30%">
-
-          <!--          <el-input v-model="checkInput" placeholder="请输入审核人员数"></el-input>-->
-          <div v-for="(item,index) in arrayData" :key="item.id">
-            <el-input
-              type="input"
-              placeholder="请填写需审核词条数"
-              v-model="item.data"
-            >
-              <el-button type="danger"
-                         slot="append"
-                         class="el-icon-remove-outline"
-                         :style="{color:'red'}"
-                         @click="deleteChecker(item,index)"></el-button>
-            </el-input>
-
-          </div>
-          <el-button type="primary" @click="addChecker">添加审核人员</el-button>
-
-          <span slot="footer" class="dialog-footer">
-            <p>总词条数：{{ this.create_item_cnt + this.init_item_cnt }}条</p>
-            <el-button @click="dialogCheckVisible = false">取 消</el-button>
-            <el-button type="primary" @click="handleCheck(checkInput)">发 布</el-button>
-          </span>
-        </el-dialog>
-      </div>
-
-      <div class="right-group">
+      <viewTable>
+        <!-- 左按钮区 -->
+        <template slot="left-field">
+          <p></p>
+          <!--          <el-button type="danger" icon="el-icon-circle-plus-outline">添加</el-button>-->
+        </template>
+        <!-- 搜索框 -->
+        <p></p>
+        <template slot="search-field">
+          <p></p>
+<!--          <el-input suffix-icon="el-icon-search" placeholder="请输入搜索内容"></el-input>-->
+        </template>
+        <!-- 过滤条件区 -->
+        <!--        <template slot="filter-field">-->
+        <!--          <el-select v-model="filterType" placeholder="选择类型"></el-select>-->
+        <!--          <el-date-picker type="daterange" start-placeholder="起始时间" end-placeholder="结束时间"></el-date-picker>-->
+        <!--        </template>-->
+        <!-- 右按钮区 -->
+        <template slot="right-field">
+          <el-button type="danger" icon="el-icon-delete">清空任务(未启用)</el-button>
+          <el-button type="success" icon="el-icon-upload2" @click="handleAssignConfirm()">发布任务</el-button>
+        </template>
+        <!-- 表格区 -->
         <el-table
           :data="subtaskTableData"
           tooltip-effect="dark"
@@ -168,31 +153,35 @@
           <el-table-column
             prop="name"
             label="任务类型"
-            width="120">
+            align="center"
+            min-width>
           </el-table-column>
           <el-table-column
             prop="content"
             label="任务描述"
-            width="120">
+            align="center"
+            min-width>
           </el-table-column>
           <el-table-column
             prop="itemCount"
             label="词条/人员数"
-            width="120">
+            align="center"
+            min-width>
           </el-table-column>
           <el-table-column
             prop="money"
             label="任务金额"
-            width="100">
+            align="center"
+            min-width>
           </el-table-column>
 
-          <el-table-column label="操作">
+          <el-table-column label="操作" align="center" min-width>
             <template slot-scope="scope">
               <el-popover
                 placement="top-start"
-                width="220"
+                width="500"
                 trigger="hover">
-                <el-form :model="scope.row" label-width="80px">
+                <el-form :model="scope.row" label-width="400px">
                   <el-form-item label="任务类型">
                     <span>{{ scope.row.name }}</span>
                   </el-form-item>
@@ -226,23 +215,112 @@
 
         </el-table>
 
-      </div>
-
+      </viewTable>
     </div>
 
+    <el-dialog
+      title="新建词条"
+      :visible.sync="dialogCreateVisible"
+      width="50%">
+      <el-form :model="createForm" :rules="rules" ref="createForm">
+        <el-form-item label="任务金额" prop="price">
+          <el-input v-model="createForm.price" clearable oninput="value=value.replace(/[^0-9.]/g,'')"
+                    placeholder="请输入任务金额"/>
+        </el-form-item>
+        <el-form-item label="新建词条数" prop="create">
+          <el-input v-model="createForm.create" clearable oninput="value=value.replace(/[^0-9]/g,'')"
+                    placeholder="请输入新建词条数"></el-input>
+        </el-form-item>
+
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+            <p>剩余酬劳:{{ money }}</p>
+            <el-button @click="dialogCreateVisible = false">取 消</el-button>
+            <el-button type="primary" @click="handleCreate('createForm')">发 布</el-button>
+          </span>
+    </el-dialog>
+
+    <el-dialog
+      title="审核词条"
+      :visible.sync="dialogCheckVisible"
+      width="50%">
+
+      <el-form :model="checkForm" :rules="rules" ref="checkForm" label-width="100px">
+        <el-form-item label="任务金额" prop="price">
+          <el-input v-model="checkForm.price" clearable oninput="value=value.replace(/[^0-9.]/g,'')"
+                    placeholder="请输入任务金额"/>
+        </el-form-item>
+
+        <el-form-item v-for="(item,index) in checkForm.persons" :label="'审核人员'+index" :key="item.id"
+                      :rules="rules.data"
+                      :prop="'persons.'+index+'.data'">
+          <el-input
+            type="input"
+            placeholder="请填写需审核词条数"
+            v-model="item.data"
+            oninput="value=value.replace(/[^0-9]/g,'')">
+            <el-button type="danger"
+                       slot="append"
+                       class="el-icon-remove-outline"
+                       :style="{color:'red'}"
+                       @click="deleteChecker(item,index)"></el-button>
+          </el-input>
+        </el-form-item>
+
+      </el-form>
+      <!--      <div v-for="(item,index) in arrayData" :key="item.id">-->
+      <!--        <el-input-->
+      <!--          type="input"-->
+      <!--          placeholder="请填写需审核词条数"-->
+      <!--          v-model="item.data"-->
+      <!--          oninput="value=value.replace(/[^0-9]/g,'')"-->
+      <!--        >-->
+      <!--          <el-button type="danger"-->
+      <!--                     slot="append"-->
+      <!--                     class="el-icon-remove-outline"-->
+      <!--                     :style="{color:'red'}"-->
+      <!--                     @click="deleteChecker(item,index)"></el-button>-->
+      <!--        </el-input>-->
+      <!--      </div>-->
+      <el-button type="primary" @click="addChecker">添加审核人员</el-button>
+
+      <span slot="footer" class="dialog-footer">
+            <p>剩余酬劳:{{ money }}</p>
+            <p>已分配词条：{{ checkItemCount }}</p>
+            <p>总词条数：{{ this.create_item_cnt + this.init_item_cnt }}条</p>
+            <el-button @click="dialogCheckVisible = false">取 消</el-button>
+            <el-button type="primary" @click="handleCheck('checkForm')">发 布</el-button>
+          </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import entryReview from '../components/entryReview'
+import viewTable from '../components/viewTable'
 
 export default {
   name: 'assignTask',
   inject: ['reload'],
   components: {
-    entryReview
+    entryReview,
+    viewTable
   },
   data() {
+    const validateReward = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('金额不能为空'))
+      } else if (value.indexOf('.') != -1 && value.split('.').length > 2) {
+        callback(new Error('请输入正确格式的金额')) // 防止输入多个小数点
+      } else if (value.indexOf('.') != -1 && value.split('.')[1].length > 2) {
+        callback(new Error('请输入正确的小数位数')) // 小数点后两位
+      } else if (parseFloat(value) > this.money) {
+        callback(new Error('任务金额超过上限'))
+      } else {
+        callback()
+      }
+    }
     return {
       serverUrl: 'http://101.200.34.92:8081',
       task_id: 0,
@@ -250,6 +328,9 @@ export default {
       user_token: '',
       inToken: '',
       fbzId: 99,
+
+      money: 0.0,
+
 
       leftCurrentPage: 1, // 初始化词条表格的当前页
       pageSize: 10, // 表格每页展示的词条数量
@@ -265,10 +346,11 @@ export default {
       createInput: '',
       checkInput: '',
 
+      checkButtonAvailable: false, // 只能发布一个审核任务
+
       // 审核词条数=所有词条数=初始化+待新建
       init_item_cnt: 0, // 初始化的词条数量
       create_item_cnt: 0, // 需要新建的词条数量
-
 
       arrayData: [
         {
@@ -278,14 +360,39 @@ export default {
       ],
       dataNum: 0,
       task: {
-        description:'',
-        document:'',
-        field:[],
-        hasInitialize:0,
-        name:'',
-        resultFileType:'',
-        reward:'',
-        task_id:1
+        description: '',
+        document: '',
+        field: [],
+        hasInitialize: 0,
+        name: '',
+        resultFileType: '',
+        reward: '',
+        task_id: 1
+      },
+
+      createForm: {
+        create: '',
+        price: ''
+      },
+      checkForm: {
+        persons: [
+          {
+            id: '1',
+            data: ''
+          }
+        ],
+        price: ''
+      },
+      rules: {
+        price: [
+          {type: 'string', required: true, trigger: 'blur', validator: validateReward}
+        ],
+        create: [
+          {required: true, type: 'string', trigger: 'blur', message: '词条数不能为空'}
+        ],
+        data: [
+          {required: true, type: 'string', trigger: 'blur', message: '词条数不能为空'}
+        ]
       }
     }
   },
@@ -297,9 +404,7 @@ export default {
       // 调用获取
       // this.tableData = []
 
-
       console.log('assignTask传入参数：', this.$route)
-
 
       if (JSON.stringify(this.$route.query) == '{}') {
         console.log('读取session信息')
@@ -342,17 +447,21 @@ export default {
       } else {
         this.getInitItems() // 需要改成从后端获取数据
       }
-
-
     },
     deleteChecker(item, index) {
-      if (this.arrayData.length <= 1) { // 如果只有一个输入框则不可以删除
+      // if (this.arrayData.length <= 1) { // 如果只有一个输入框则不可以删除
+      //   return false
+      // }
+      // this.arrayData.splice(index, 1)// 删除了数组中对应的数据也就将这个位置的输入框删除
+
+      if (this.checkForm.persons.length <= 1) { // 如果只有一个输入框则不可以删除
+        this.$message.warning('至少需要一个审核人员')
         return false
       }
-      this.arrayData.splice(index, 1)// 删除了数组中对应的数据也就将这个位置的输入框删除
+      this.checkForm.persons.splice(index, 1)// 删除了数组中对应的数据也就将这个位置的输入框删除
     },
     addChecker(item) {
-      this.arrayData.push(// 增加就push进数组一个新值
+      this.checkForm.persons.push(// 增加就push进数组一个新值
         {
           id: this.dataNum++,
           data: ''
@@ -370,14 +479,14 @@ export default {
             this.tableData.push(item)
           })
           this.init_item_cnt = this.tableData.length
-          this.task=res.data.data.task
-          console.log('收到的后端task信息：',this.task)
+          this.task = res.data.data.task
+          this.money = this.task.reward
+          console.log('收到的后端task信息：', this.task)
         })
         .catch(error => {
           console.log(error)
           this.$message.error('获取初始化词条失败')
         })
-
     },
     toggleSelection(rows) {
       if (rows) {
@@ -431,32 +540,70 @@ export default {
       this.addSubtask(2, 500.00, selectedItemTable.length, selectedItemTable)
       this.toggleSelection(selectedTable)
     },
-    handleCreate(input) {
-      if (input.length > 0) {
-        let itemCount = parseInt(input)
-        this.create_item_cnt += itemCount//////////////////////////////////////////////
-        this.addSubtask(1, 500.00, itemCount, [])
-      }
-      this.dialogCreateVisible = false
-      this.createInput = ''
+    handleCreate(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let itemCount = parseInt(this.createForm.create)
+          let price = parseFloat(this.createForm.price)
+          this.create_item_cnt += itemCount/// ///////////////////////////////////////////
+          this.money -= price
+          this.addSubtask(1, price, itemCount, [])
+          this.$message.success('任务添加成功')
+          this.dialogCreateVisible = false
+          this.$refs[formName].resetFields();
+        } else {
+          this.$message.error('任务添加失败，请确保输入正确')
+          return false
+        }
+      })
     },
-    handleCheck(input) {
-      let checkCnt = 0
-      let checkArray = []
-      this.arrayData.forEach(item => {
-        checkArray.push(parseInt(item.data))
-        checkCnt += parseInt(item.data)
+    handleCheck(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let checkCnt = 0
+          let checkArray = []
+          this.checkForm.persons.forEach(item => {
+            checkArray.push(parseInt(item.data))
+            checkCnt += parseInt(item.data)
+          })
+
+          if (checkArray.length > 0) {
+            if (checkCnt != this.init_item_cnt + this.create_item_cnt) {
+              this.$message.warning('请确保总审核词条数和总词条数一致')
+              return
+            }
+            let price = parseFloat(this.checkForm.price)
+            this.money -= price
+            this.addSubtask(3, price, checkArray.length, checkArray)
+          }
+
+          this.$message.success('任务添加成功')
+          this.dialogCheckVisible = false
+          this.checkButtonAvailable = true
+          this.$refs[formName].resetFields();
+        } else {
+          this.$message.error('任务添加失败，请确保输入正确')
+          return false
+        }
       })
 
-      if (checkArray.length > 0) {
-        if (checkCnt != this.init_item_cnt + this.create_item_cnt) {
-          this.$message.warning('请确保总审核词条数和总词条数一致')
-          return
-        }
-        this.addSubtask(3, 500.00, checkArray.length, checkArray)
-      }
-      this.dialogCheckVisible = false
-      this.checkInput = ''
+
+      // let checkCnt = 0
+      // let checkArray = []
+      // this.arrayData.forEach(item => {
+      //   checkArray.push(parseInt(item.data))
+      //   checkCnt += parseInt(item.data)
+      // })
+      //
+      // if (checkArray.length > 0) {
+      //   if (checkCnt != this.init_item_cnt + this.create_item_cnt) {
+      //     this.$message.warning('请确保总审核词条数和总词条数一致')
+      //     return
+      //   }
+      //   this.addSubtask(3, 500.00, checkArray.length, checkArray)
+      // }
+      // this.dialogCheckVisible = false
+      // this.checkInput = ''
     },
     handlePreview(row) {
       this.selectTable = row
@@ -471,13 +618,14 @@ export default {
 
       if (row.type === 1) { // 新建任务
         this.create_item_cnt -= row.itemCount
-      }
-
-      if (row.type === 2) { // 完善任务，撤销后需要将初始化的词条前面的禁止勾选取消
+      } else if (row.type === 2) { // 完善任务，撤销后需要将初始化的词条前面的禁止勾选取消
         for (let id in row.itemTable) {
           this.disableItemTable.splice(this.disableItemTable.indexOf(id), 1)
         }
+      } else if (row.type === 3) { // 审核任务，撤销后需要恢复 审核按钮 的可用性
+        this.checkButtonAvailable = false
       }
+      this.money += row.money
     },
     handleAssignConfirm() {
       if (this.subtaskTableData.length <= 0) {
@@ -503,7 +651,6 @@ export default {
             this.displayMessage('success', '发布任务成功')
             this.subtaskTableData = []
 
-
             // this.$router.push(
             //   {
             //     path: '113.207.56.4/taskDetail',
@@ -517,32 +664,32 @@ export default {
             let url = 'http://113.207.56.4/taskDetail' + '?id=' + String(this.user_id) + '&type=2&token=' + String(this.user_token)
             console.log('跳转url：', url)
             window.location.href = url
-
           }
         )
         .catch(error => {
           console.log('发布失败，请重新发布！', error)
           this.$message.error('发布失败，请重新发布！')
         })
-
     },
     handleLeftSizeChange(val) {
       console.log(`每页 ${val} 条`)
       this.leftCurrentPage = 1
       this.pageSize = val
-    }
-    ,
-// 当前页改变时触发 跳转其他页
+    },
+    // 当前页改变时触发 跳转其他页
     handleLeftCurrentChange(val) {
       console.log(`当前页: ${val}`)
       this.leftCurrentPage = val
-    }
-    ,
+    },
     displayMessage(type, msg) {
       this.$message({
         message: msg,
         type: type
       })
+    },
+    handleFieldTable(row, column) {
+      let tmp = row.field
+      return tmp.join()
     }
   },
   computed: {
@@ -552,6 +699,16 @@ export default {
         totalCount += 1
       })
       return totalCount
+    },
+    checkItemCount() {
+      let totalCount = 0
+      this.checkForm.persons.forEach(item => {
+        if (item.data.length <= 0) {
+          return
+        }
+        totalCount += parseInt(item.data)
+      })
+      return totalCount
     }
   }
 }
@@ -559,46 +716,8 @@ export default {
 
 <style>
 .head {
-  flex:1;
-  width: 100%;
-}
-
-.container {
-  position: absolute;
-  width: 100%;
-  display: flex;
   flex: 1;
-}
-
-.left-group, .right-group {
-  width: 40%;
-  /*background-color: #7ecff2;*/
-  text-align: center;
-}
-
-.mid-group {
-  flex: 1;
-  /*background-color: #ff5000;*/
-  text-align: center;
-
-}
-
-.mid-button-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.mid-button-bottom {
-  /*align-items: center;*/
-
-  /*position: absolute;*/
-  /*bottom: 0px;*/
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, -50%);
+  width: 100%;
 }
 
 .foot {
@@ -609,6 +728,7 @@ export default {
   /*background-color: purple;*/
   text-align: center;
 }
+
 .demo-table-expand {
   font-size: 0;
 
@@ -619,7 +739,7 @@ export default {
   color: #99a9bf;
 }
 
-.demo-table-expand .el-form-item{
+.demo-table-expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
   width: 100%;
