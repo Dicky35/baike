@@ -98,7 +98,7 @@
             prop="intro"
             label="简介"
             align="center"
-            show-overflow-tooltip="false"
+            show-overflow-tooltip
             min-width>
           </el-table-column>
 
