@@ -8,7 +8,7 @@
           <span>专题信息</span>
         </div>
 
-        <el-form label-position="left" inline class="demo-table-expand">
+        <el-form label-position="left" inline class="task-card">
           <el-form-item label="专题ID">
             <span>{{ this.task.task_id }}</span>
           </el-form-item>
@@ -638,6 +638,7 @@ export default {
         task_id: this.task_id,
         subtask: this.subtaskTableData,
         inside_token: window.sessionStorage.getItem('token'),
+        outside_token: this.user_token,
         fbzId: this.fbzId
       })
 
@@ -729,17 +730,17 @@ export default {
   text-align: center;
 }
 
-.demo-table-expand {
+.task-card {
   font-size: 0;
 
 }
 
-.demo-table-expand label {
+.task-card label {
   width: 90px;
   color: #99a9bf;
 }
 
-.demo-table-expand .el-form-item {
+.task-card .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
   width: 100%;
