@@ -51,10 +51,7 @@
       <!--      <i class="el-icon-plus avatar-uploader-icon"></i>-->
     </el-upload>
     <vue-qr :text="isli_code" :logoSrc="isliLogoPath"></vue-qr>
-    <vue-qr ref="Qrcode"
-            :text="dataObj.text"
-            :logoSrc="dataObj.logo"
-            :callback="test" qid="testQrId"></vue-qr>
+
   </div>
 </template>
 
@@ -81,18 +78,10 @@ export default {
         imageUrl: ''
       },
       isli_code: 'waiting for association',
-      isliLogoPath: require('@/assets/isliLogo.jpg'),
-      dataObj: {
-        text: 'https://blog.csdn.net/weixin_43760328/rss/list',
-        logo: require('../assets/logo.png')
-      }
+      isliLogoPath: require('@/assets/isliLogo.jpg')
     }
   },
   methods: {
-    test(dataUrl, id) {
-      console.log(dataUrl)
-      console.log(id)
-    },
     uploadImg(item) {
       let formData = new FormData()
       formData.append('photo', item.file)
