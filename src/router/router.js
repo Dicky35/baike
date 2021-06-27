@@ -38,9 +38,9 @@ export default new Router({
       component: () => import('../pages/check')
     },
     {
-      path: '/goal',
-      name: 'goal',
-      component: () => import('../pages/goal')
+      path: '/achievement',
+      name: 'achievement',
+      component: () => import('../pages/achievement')
     },
     {
       path: '/subTask',

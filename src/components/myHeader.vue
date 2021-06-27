@@ -16,25 +16,25 @@
       <template slot="prepend">发布者Id</template>
     </el-input>
 
-    <el-button type='primary' @click="editPage(user_id,user_token,task_id)"> 编辑</el-button>
-    <el-button type='primary' @click="checkPage(user_id,user_token,task_id)">审核</el-button>
-    <el-button type="primary" @click="handleAssign(user_id,user_token,task_id)">任务划分</el-button>
+<!--    <el-button type='primary' @click="editPage(user_id,user_token,task_id)"> 编辑</el-button>-->
+<!--    <el-button type='primary' @click="checkPage(user_id,user_token,task_id)">审核</el-button>-->
+<!--    <el-button type="primary" @click="handleAssign(user_id,user_token,task_id)">任务划分</el-button>-->
 
-    <el-button type="primary" @click="handleEditor">词条编辑</el-button>
+<!--    <el-button type="primary" @click="handleEditor">词条编辑</el-button>-->
 
     <p></p>
-    <el-button type="primary" @click="sendMessage(user_id,user_token)">searchUserId</el-button>
-    <el-button type="primary" @click="updateEditItem">updateEditItem</el-button>
-    <el-button type="primary" @click="getCheckItem">getCheckItem</el-button>
-    <el-button type="primary" @click="updateCheckItem">updateCheckItem</el-button>
-    <el-button type="primary" @click="submitTask">submitTask</el-button>
-    <el-button type="primary" @click="assignTask">assignTask</el-button>
+<!--    <el-button type="primary" @click="sendMessage(user_id,user_token)">searchUserId</el-button>-->
+<!--    <el-button type="primary" @click="updateEditItem">updateEditItem</el-button>-->
+<!--    <el-button type="primary" @click="getCheckItem">getCheckItem</el-button>-->
+<!--    <el-button type="primary" @click="updateCheckItem">updateCheckItem</el-button>-->
+<!--    <el-button type="primary" @click="submitTask">submitTask</el-button>-->
+<!--    <el-button type="primary" @click="assignTask">assignTask</el-button>-->
     <div>
       <br/>
       <br/>
       <el-button type="primary" @click="assignLogin">assignLogin Page</el-button>
       <el-button type="primary" @click="subtaskLogin">subtaskLogin Page</el-button>
-      <el-button type="primary" @click="goalPage">goal Page</el-button>
+      <el-button type="primary" @click="achievementPage">Achievement Page</el-button>
     </div>
     <el-upload
       class="avatar-uploader"
@@ -50,14 +50,21 @@
 
       <!--      <i class="el-icon-plus avatar-uploader-icon"></i>-->
     </el-upload>
-
+    <vue-qr :text="isli_code" :logoSrc="isliLogoPath"></vue-qr>
+    <vue-qr ref="Qrcode"
+            :text="dataObj.text"
+            :logoSrc="dataObj.logo"
+            :callback="test" qid="testQrId"></vue-qr>
   </div>
 </template>
 
 <script>
-
+import vueQr from 'vue-qr'
 export default {
   name: 'myHeader',
+  components: {
+    vueQr
+  },
   data() {
     return {
       serverUrl: 'http://101.200.34.92:8081',
@@ -72,10 +79,20 @@ export default {
       sizeList: ['large', 'medium', 'small'],
       form: {
         imageUrl: ''
+      },
+      isli_code: 'waiting for association',
+      isliLogoPath: require('@/assets/isliLogo.jpg'),
+      dataObj: {
+        text: 'https://blog.csdn.net/weixin_43760328/rss/list',
+        logo: require('../assets/logo.png')
       }
     }
   },
   methods: {
+    test(dataUrl, id) {
+      console.log(dataUrl)
+      console.log(id)
+    },
     uploadImg(item) {
       let formData = new FormData()
       formData.append('photo', item.file)
@@ -255,10 +272,10 @@ export default {
         query: {userId: this.user_id, taskId: this.task_id, token: this.user_token}
       })
     },
-    goalPage() {
+    achievementPage() {
       this.$router.push({
-        path: '/goal',
-        query: {user_id: this.user_id, task_id: this.task_id, token: this.user_token}
+        path: '/achievement',
+        query: {taskId: this.task_id, token: this.user_token}
       })
     }
     // getInitItems () {

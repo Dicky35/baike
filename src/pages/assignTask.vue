@@ -664,6 +664,7 @@ export default {
             // )
             let url = 'http://113.207.56.4/taskDetail' + '?id=' + String(this.user_id) + '&type=2&token=' + String(this.user_token)
             console.log('跳转url：', url)
+          this.$message.success('跳转至任务详情页面')
             window.location.href = url
           }
         )

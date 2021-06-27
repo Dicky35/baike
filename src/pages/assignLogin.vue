@@ -24,6 +24,7 @@ export default {
       if (JSON.stringify(this.$route.query) == '{}') {
         this.task_id = 0
         this.user_id = 0
+        this.fbzId = 0
         this.token = ''
       } else {
         this.task_id = this.$route.query.taskId

@@ -55,14 +55,14 @@
             @click="handlePreview(scope.row)">预览
           </el-button>
           <el-button v-if="scope.row.status != 3"
-            size="mini"
-            type="primary"
-            @click="handleSubmit(scope.row)">提交审核
+                     size="mini"
+                     type="primary"
+                     @click="handleSubmit(scope.row)">提交审核
           </el-button>
           <el-button v-else
                      size="mini"
                      type="primary"
-          disabled="true">正在审核
+                     :disabled="true">正在审核
           </el-button>
         </template>
       </el-table-column>
@@ -113,7 +113,7 @@ export default {
         this.user_id = this.$route.query.user_id
         this.user_token = this.$route.query.user_token
         this.task_id = this.$route.query.task_id
-        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id,user_token:this.user_token})
+        let loginData = JSON.stringify({user_id: this.user_id, task_id: this.task_id, user_token: this.user_token})
         window.sessionStorage.setItem('user', loginData)
       }
 
@@ -157,7 +157,7 @@ export default {
     },
     handleEdit: function (row) {
       this.selectTable = row
-      console.log('准备编辑：',row)
+      console.log('准备编辑：', row)
       window.sessionStorage.setItem('item', JSON.stringify(this.selectTable))
       this.$router.push({
         path: '/editor',
