@@ -36,6 +36,8 @@
       <el-button type="primary" @click="subtaskLogin">subtaskLogin Page</el-button>
       <el-button type="primary" @click="achievementPage">Achievement Page</el-button>
     </div>
+    <br/><br/>
+    <el-button type="primary" @click="jumptoIzhihui">打开智荟网</el-button>
     <el-upload
       class="avatar-uploader"
       action=""
@@ -82,6 +84,9 @@ export default {
     }
   },
   methods: {
+    jumptoIzhihui(){
+      window.open('http://www.izhihui.net', '_blank')
+    },
     uploadImg(item) {
       let formData = new FormData()
       formData.append('photo', item.file)

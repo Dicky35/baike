@@ -310,6 +310,7 @@ export default {
       relation: '',
       optionInRelation: ['上位词', '下位词', '贡献词'],
       task_id: -1,
+      image_http_url:'',
       form: {
         item_id: 0,
         original_id: -1,
@@ -1063,7 +1064,7 @@ export default {
         .then(response => {
           console.log('uploadImg:', response)
           if (response.status === 200) {
-            console.log('upload success')
+            console.log('upload success:',response)
             this.form.imageUrl = 'http://101.200.34.92:9010/download/' + response.data.filename
             console.log('imageUrl: ', this.form.imageUrl)
 

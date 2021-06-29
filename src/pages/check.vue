@@ -62,7 +62,11 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="text-align:center">
+      <br/>
+      <br/>
+      <el-button type="info" @click="jumpToIZhihui" round>前往智荟网</el-button>
+    </div>
     <entryReview :form="selectTable" :drawerFlag="drawerFlag" v-on:handleClose="handleClose"></entryReview>
   </div>
 </template>
@@ -185,6 +189,9 @@ export default {
         message: msg,
         type: type
       })
+    },
+    jumpToIZhihui() {
+      window.location.href = 'http://izhihui.net/'
     }
 
   }

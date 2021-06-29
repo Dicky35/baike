@@ -22,11 +22,11 @@
             <span>{{ this.task.reward }}</span>
           </el-form-item>
           <el-form-item label="专题描述">
-            <span>{{ this.task.description }}</span>
+            <span>{{ this.task.description.toString().replace('[', '').replace(']', '') }}</span>
           </el-form-item>
 
           <el-form-item label="专题内容">
-            <span>{{ this.task.document }}</span>
+            <span>{{ this.task.document.toString().replace('[', '').replace(']', '') }}</span>
           </el-form-item>
         </el-form>
 
@@ -46,13 +46,21 @@
         </template>
         <!-- 过滤条件区 -->
 
-        <!--        <template slot="filter-field">-->
-        <!--          <el-select v-model="filterType" placeholder="选择类型"></el-select>-->
-        <!--          <el-date-picker type="daterange" start-placeholder="起始时间" end-placeholder="结束时间"></el-date-picker>-->
-        <!--        </template>-->
+        <template slot="filter-field">
+
+          <el-form :inline="true" :hide-required-asterisk="true" :model="completeForm" :rules="rules" ref="completeForm" label-width="150px">
+            <el-form-item label="完善任务金额" prop="price">
+              <el-input v-model="completeForm.price" clearable oninput="value=value.replace(/[^0-9.]/g,'')"
+                        placeholder="请输入完善任务金额"/>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button type="primary" icon="el-icon-edit" @click="handleComplete('completeForm')">完善词条</el-button>
+            </el-form-item>
+          </el-form>
+        </template>
         <!-- 右按钮区 -->
         <template slot="right-field">
-          <el-button type="primary" icon="el-icon-edit" @click="handleComplete">完善词条</el-button>
           <el-button type="primary" icon="el-icon-document-add" @click="dialogCreateVisible=true">新建词条</el-button>
           <el-button type="success" icon="el-icon-finished" :disabled="checkButtonAvailable"
                      @click="dialogCheckVisible=true">审核词条
@@ -133,13 +141,14 @@
         <p></p>
         <template slot="search-field">
           <p></p>
-<!--          <el-input suffix-icon="el-icon-search" placeholder="请输入搜索内容"></el-input>-->
+          <!--          <el-input suffix-icon="el-icon-search" placeholder="请输入搜索内容"></el-input>-->
         </template>
         <!-- 过滤条件区 -->
-        <!--        <template slot="filter-field">-->
-        <!--          <el-select v-model="filterType" placeholder="选择类型"></el-select>-->
-        <!--          <el-date-picker type="daterange" start-placeholder="起始时间" end-placeholder="结束时间"></el-date-picker>-->
-        <!--        </template>-->
+        <template slot="filter-field">
+          <p></p>
+          <!--                  <el-select v-model="filterType" placeholder="选择类型"></el-select>-->
+          <!--                  <el-date-picker type="daterange" start-placeholder="起始时间" end-placeholder="结束时间"></el-date-picker>-->
+        </template>
         <!-- 右按钮区 -->
         <template slot="right-field">
           <el-button type="danger" icon="el-icon-delete">清空任务(未启用)</el-button>
@@ -269,20 +278,7 @@
         </el-form-item>
 
       </el-form>
-      <!--      <div v-for="(item,index) in arrayData" :key="item.id">-->
-      <!--        <el-input-->
-      <!--          type="input"-->
-      <!--          placeholder="请填写需审核词条数"-->
-      <!--          v-model="item.data"-->
-      <!--          oninput="value=value.replace(/[^0-9]/g,'')"-->
-      <!--        >-->
-      <!--          <el-button type="danger"-->
-      <!--                     slot="append"-->
-      <!--                     class="el-icon-remove-outline"-->
-      <!--                     :style="{color:'red'}"-->
-      <!--                     @click="deleteChecker(item,index)"></el-button>-->
-      <!--        </el-input>-->
-      <!--      </div>-->
+
       <el-button type="primary" @click="addChecker">添加审核人员</el-button>
 
       <span slot="footer" class="dialog-footer">
@@ -331,7 +327,6 @@ export default {
 
       money: 0.0,
 
-
       leftCurrentPage: 1, // 初始化词条表格的当前页
       pageSize: 10, // 表格每页展示的词条数量
 
@@ -372,6 +367,9 @@ export default {
 
       createForm: {
         create: '',
+        price: ''
+      },
+      completeForm: {
         price: ''
       },
       checkForm: {
@@ -516,18 +514,31 @@ export default {
       }
       let typeNameTable = ['新建', '完善', '审核']
       let typeName = typeNameTable[type - 1]
-      this.subtaskTableData.push({
-        name: typeName + '词条',
-        content: typeName + itemCount.toString() + '条词条',
-        type: type,
-        money: money,
-        itemCount: itemCount,
-        itemTable: itemTable
-      })
+
+      if (type == 3) {
+        this.subtaskTableData.push({
+          name: typeName + '词条',
+          content: typeName + (this.create_item_cnt + this.init_item_cnt).toString() + '条词条',
+          type: type,
+          money: money,
+          itemCount: itemCount,
+          itemTable: itemTable
+        })
+      } else {
+        this.subtaskTableData.push({
+          name: typeName + '词条',
+          content: typeName + itemCount.toString() + '条词条',
+          type: type,
+          money: money,
+          itemCount: itemCount,
+          itemTable: itemTable
+        })
+      }
     },
-    handleComplete() {
+    handleComplete(formName) {
       let selectedTable = []
       let selectedItemTable = []
+
       this.multipleSelection.forEach(sel => {
         selectedTable.push(sel)
         selectedItemTable.push(sel.item_id)
@@ -537,8 +548,18 @@ export default {
         this.displayMessage('warning', '请选择至少一条词条')
         return
       }
-      this.addSubtask(2, 500.00, selectedItemTable.length, selectedItemTable)
-      this.toggleSelection(selectedTable)
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let price = parseFloat(this.completeForm.price)
+          this.addSubtask(2, price, selectedItemTable.length, selectedItemTable)
+          this.toggleSelection(selectedTable)
+        } else {
+          this.$message.error('任务添加失败，请确保输入的完善任务金额正确')
+          return false
+        }
+      })
+
+
     },
     handleCreate(formName) {
       this.$refs[formName].validate((valid) => {
@@ -550,7 +571,7 @@ export default {
           this.addSubtask(1, price, itemCount, [])
           this.$message.success('任务添加成功')
           this.dialogCreateVisible = false
-          this.$refs[formName].resetFields();
+          this.$refs[formName].resetFields()
         } else {
           this.$message.error('任务添加失败，请确保输入正确')
           return false
@@ -580,13 +601,12 @@ export default {
           this.$message.success('任务添加成功')
           this.dialogCheckVisible = false
           this.checkButtonAvailable = true
-          this.$refs[formName].resetFields();
+          this.$refs[formName].resetFields()
         } else {
           this.$message.error('任务添加失败，请确保输入正确')
           return false
         }
       })
-
 
       // let checkCnt = 0
       // let checkArray = []
@@ -652,19 +672,9 @@ export default {
             this.displayMessage('success', '发布任务成功')
             this.subtaskTableData = []
 
-            // this.$router.push(
-            //   {
-            //     path: '113.207.56.4/taskDetail',
-            //     query: {
-            //       id: this.task_id,
-            //       type: 2,
-            //       token: this.user_token
-            //     }
-            //   }
-            // )
-            let url = 'http://113.207.56.4/taskDetail' + '?id=' + String(this.user_id) + '&type=2&token=' + String(this.user_token)
+            let url = 'http://izhihui.net/taskDetail' + '?id=' + String(this.user_id) + '&type=2&token=' + String(this.user_token)
             console.log('跳转url：', url)
-          this.$message.success('跳转至任务详情页面')
+            this.$message.success('跳转至任务详情页面')
             window.location.href = url
           }
         )

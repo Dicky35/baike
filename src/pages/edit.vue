@@ -47,7 +47,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            :disabled="!(scope.row.status === 2 || scope.row.status === 4)"
+            :disabled="!(scope.row.status === 0 || scope.row.status === 2 || scope.row.status === 4)"
             @click="handleEdit(scope.row)">编辑
           </el-button>
           <el-button
@@ -67,6 +67,11 @@
         </template>
       </el-table-column>
     </el-table>
+    <div style="text-align:center">
+      <br/>
+      <br/>
+      <el-button type="info" @click="jumpToIZhihui" round>前往智荟网</el-button>
+    </div>
 
     <entryReview :form="selectTable" :drawerFlag="drawerFlag" v-on:handleClose="handleClose"></entryReview>
   </div>
@@ -195,6 +200,9 @@ export default {
     },
     handleClose() {
       this.drawerFlag = false
+    },
+    jumpToIZhihui() {
+      window.location.href = 'http://izhihui.net/'
     }
     // handleTest (row) {
     //   row.status=2

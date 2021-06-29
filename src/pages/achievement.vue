@@ -22,11 +22,11 @@
             <span>{{ task.reward }}</span>
           </el-form-item>
           <el-form-item label="专题描述">
-            <span>{{ task.description }}</span>
+            <span>{{ task.description.toString().replace('[', '').replace(']', '') }}</span>
           </el-form-item>
 
           <el-form-item label="专题内容">
-            <span>{{ task.document }}</span>
+            <span>{{ task.document.toString().replace('[', '').replace(']', '') }}</span>
           </el-form-item>
           <el-form-item label="关联资源">
             <vue-qr v-if="task.isli_code!=''" :text="task.isli_code" :logoSrc="isliLogoPath"></vue-qr>

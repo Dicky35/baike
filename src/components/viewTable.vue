@@ -7,15 +7,15 @@
           <slot name="left-field"></slot>
         </el-col>
         <!-- 搜索框 -->
-        <el-col :span="8">
+        <el-col :span="4">
           <slot name="search-field"></slot>
         </el-col>
         <!-- 过滤条件区 -->
-        <el-col :span="12">
+        <el-col :span="10">
           <slot name="filter-field"></slot>
         </el-col>
         <!-- 右按钮区 -->
-        <el-col :span="12" align="right">
+        <el-col :span="6" align="right">
           <slot name="right-field"></slot>
         </el-col>
       </el-row>

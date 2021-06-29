@@ -56,7 +56,6 @@ export default {
             this.jumpName = 'check'
           }
 
-          console.log('subtaskLogin: ', this.task_id, ' ', this.token, ' ', this.user_id)
           this.$router.push(
             {
               path: '/' + this.jumpName,
