@@ -19,7 +19,7 @@
             <span>{{ this.task.field.toString().replace('[', '').replace(']', '') }}</span>
           </el-form-item>
           <el-form-item label="专题酬劳">
-            <span>{{ this.task.reward }}</span>
+            <span>{{ parseFloat(this.task.reward).toFixed(2) }}</span>
           </el-form-item>
           <el-form-item label="专题描述">
             <span>{{ this.task.description.toString().replace('[', '').replace(']', '') }}</span>
@@ -42,13 +42,14 @@
         <template slot="search-field">
           <!--          <span>已分配酬劳</span>-->
           <!--          <el-progress :text-inside="true" :stroke-width="26" :percentage="70" show-text>已分配酬劳</el-progress>-->
-          <el-button>剩余酬劳:{{ money }}</el-button>
+          <el-button>剩余酬劳:{{ money.toFixed(2) }}</el-button>
         </template>
         <!-- 过滤条件区 -->
 
         <template slot="filter-field">
 
-          <el-form :inline="true" :hide-required-asterisk="true" :model="completeForm" :rules="rules" ref="completeForm" label-width="150px">
+          <el-form :inline="true" :hide-required-asterisk="true" :model="completeForm" :rules="rules" ref="completeForm"
+                   label-width="150px">
             <el-form-item label="完善任务金额" prop="price">
               <el-input v-model="completeForm.price" clearable oninput="value=value.replace(/[^0-9.]/g,'')"
                         placeholder="请输入完善任务金额"/>
@@ -151,7 +152,7 @@
         </template>
         <!-- 右按钮区 -->
         <template slot="right-field">
-          <el-button type="danger" icon="el-icon-delete">清空任务(未启用)</el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="handleClear()">清空任务</el-button>
           <el-button type="success" icon="el-icon-upload2" @click="handleAssignConfirm()">发布任务</el-button>
         </template>
         <!-- 表格区 -->
@@ -207,7 +208,7 @@
                     <span>{{ scope.row.itemTable }}</span>
                   </el-form-item>
                   <el-form-item label="任务金额">
-                    <span>{{ scope.row.money }}</span>
+                    <span>{{ scope.row.money.toFixed(2) }}</span>
                   </el-form-item>
 
                 </el-form>
@@ -244,7 +245,7 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-            <p>剩余酬劳:{{ money }}</p>
+            <p>剩余酬劳:{{ money.toFixed(2) }}</p>
             <el-button @click="dialogCreateVisible = false">取 消</el-button>
             <el-button type="primary" @click="handleCreate('createForm')">发 布</el-button>
           </span>
@@ -282,7 +283,7 @@
       <el-button type="primary" @click="addChecker">添加审核人员</el-button>
 
       <span slot="footer" class="dialog-footer">
-            <p>剩余酬劳:{{ money }}</p>
+            <p>剩余酬劳:{{ money.toFixed(2) }}</p>
             <p>已分配词条：{{ checkItemCount }}</p>
             <p>总词条数：{{ this.create_item_cnt + this.init_item_cnt }}条</p>
             <el-button @click="dialogCheckVisible = false">取 消</el-button>
@@ -478,7 +479,7 @@ export default {
           })
           this.init_item_cnt = this.tableData.length
           this.task = res.data.data.task
-          this.money = this.task.reward
+          this.money = parseFloat(this.task.reward)
           console.log('收到的后端task信息：', this.task)
         })
         .catch(error => {
@@ -558,8 +559,6 @@ export default {
           return false
         }
       })
-
-
     },
     handleCreate(formName) {
       this.$refs[formName].validate((valid) => {
@@ -632,6 +631,21 @@ export default {
     handleClose() {
       this.drawerFlag = false
     },
+    handleClear() {
+      this.subtaskTableData.forEach(item => {
+        if (item.type === 1) { // 新建任务
+          this.create_item_cnt -= item.itemCount
+        } else if (item.type === 2) { // 完善任务，撤销后需要将初始化的词条前面的禁止勾选取消
+          for (let id in item.itemTable) {
+            this.disableItemTable.splice(this.disableItemTable.indexOf(id), 1)
+          }
+        } else if (item.type === 3) { // 审核任务，撤销后需要恢复 审核按钮 的可用性
+          this.checkButtonAvailable = false
+        }
+        this.money += item.money
+      })
+      this.subtaskTableData = []
+    },
     handleUndo(index, row) {
       // console.log('撤销 index: ', index)
       this.subtaskTableData.splice(index, 1)
@@ -668,7 +682,7 @@ export default {
       this.$axios
         .post(this.serverUrl + '/inside_api/entry/taskSplit', msg)
         .then(res => {
-            console.log('发布任务成功', msg)
+            console.log('发布任务成功', res)
             this.displayMessage('success', '发布任务成功')
             this.subtaskTableData = []
 
